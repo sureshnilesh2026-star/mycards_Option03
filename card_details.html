@@ -125,11 +125,12 @@
       .product-chip--w115 {
         width: 115px;
       }
-      /* Cards layer — horizontally scrollable rail */
+      /* Cards layer — horizontally scrollable rail (360 frame: ~86% width card, centered + peek) */
       .frame-root__cards {
         flex: 0 0 auto;
         display: flex;
         flex-direction: column;
+        gap: 16px;
         background: transparent;
         min-width: 0;
       }
@@ -143,7 +144,8 @@
         touch-action: pan-x;
         scrollbar-width: none;
         scroll-snap-type: x mandatory;
-        padding: 4px 60px 8px;
+        /* (360 − 308) / 2 → card centers; ~12px card gap shows sliver of next card */
+        padding: 10px 26px 0;
       }
       .frame-root__cards-scroll::-webkit-scrollbar {
         display: none;
@@ -159,10 +161,10 @@
       .bank-card {
         position: relative;
         flex: 0 0 auto;
-        width: 264px;
-        height: 156px;
-        aspect-ratio: 264 / 156;
-        border-radius: 9px;
+        width: 308px;
+        height: 182px;
+        aspect-ratio: 308 / 182;
+        border-radius: 14px;
         scroll-snap-align: center;
         scroll-snap-stop: always;
         box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
@@ -199,7 +201,7 @@
         align-items: center;
         justify-content: flex-start;
         gap: 16px;
-        padding: 0 60px 18px;
+        padding: 0 26px 18px;
         line-height: 0;
       }
       .frame-root__card-dots-svg {
@@ -872,8 +874,8 @@
                 class="bank-card__img"
                 src="assets/card-swiggy2.png"
                 alt=""
-                width="264"
-                height="156"
+                width="308"
+                height="182"
                 loading="lazy"
                 draggable="false"
               />
@@ -887,8 +889,8 @@
                 class="bank-card__img"
                 src="assets/card-tatanuo2.png"
                 alt=""
-                width="264"
-                height="156"
+                width="308"
+                height="182"
                 loading="lazy"
                 draggable="false"
               />
@@ -902,8 +904,8 @@
                 class="bank-card__img"
                 src="assets/card-infinia2.png"
                 alt=""
-                width="264"
-                height="156"
+                width="308"
+                height="182"
                 loading="lazy"
                 draggable="false"
               />
@@ -917,8 +919,8 @@
                 class="bank-card__img"
                 src="assets/card-millenia2.png"
                 alt=""
-                width="264"
-                height="156"
+                width="308"
+                height="182"
                 loading="lazy"
                 draggable="false"
               />

@@ -399,6 +399,9 @@
           if (enteredDigits.length >= 4) return;
           enteredDigits.push(String(ch));
           renderDigits();
+          if (enteredDigits.length === 4) {
+            dismissKeyboardAndMoveContentDown();
+          }
         }
 
         function keypadRemoveLastDigit() {
@@ -667,6 +670,7 @@
 
         function dismissKeyboardAndMoveContentDown() {
           if (!isVerifying) return;
+          if (keyboard && keyboard.classList.contains("translate-y-[320px]")) return;
 
           if (keyboard) {
             keyboard.classList.add("translate-y-[320px]");
