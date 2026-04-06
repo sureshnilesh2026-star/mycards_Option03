@@ -57,7 +57,6 @@
         z-index: 1;
         pointer-events: none;
         opacity: 0;
-        /* Same opacity timing as .frame-root.cd-intro .frame-root__header-img (top bar) */
         transition: opacity 0.5s ease-out;
       }
       .mobile-page--gradient-in .mobile-page__gradient {
@@ -78,14 +77,6 @@
         display: flex;
         flex-direction: column;
         background: transparent;
-      }
-      .frame-root__header-img {
-        width: 360px;
-        max-width: 100%;
-        height: auto;
-        display: block;
-        flex-shrink: 0;
-        vertical-align: top;
       }
       .frame-root__mycards-header {
         width: 360px;
@@ -169,7 +160,7 @@
       .product-chip--w115 {
         width: 115px;
       }
-      /* Cards layer — first card top at 213px from frame; rail absolutely placed on frame-root */
+      /* Cards layer — first card top at 109px from frame; rail absolute on frame-root */
       .frame-root__creditcard {
         flex: 0 0 auto;
         display: flex;
@@ -178,13 +169,13 @@
         background: transparent;
         min-width: 0;
         /* In-flow height: card rail is absolute; reserve card(156)+gap(16)+dots+padding below it */
-        min-height: 220px;
+        min-height: 212px;
       }
       .frame-root__creditcard-scroll {
         position: absolute;
         left: 0;
         right: 0;
-        top: 213px;
+        top: 109px;
         width: 100%;
         min-width: 0;
         height: 156px;
@@ -262,8 +253,8 @@
         align-items: center;
         justify-content: flex-start;
         gap: 16px;
-        /* Frame rail ends at 213+156; headers end ~213px → 156 + 16px gap under card (+8px nudge) */
-        margin-top: 180px;
+        /* Dots sit under rail; margin tracks absolute rail top + card height (see .frame-root__creditcard-scroll) */
+        margin-top: 172px;
         padding: 0 48px 18px;
         line-height: 0;
         position: relative;
@@ -299,6 +290,7 @@
         background: transparent;
         position: relative;
         z-index: 1;
+        /* Overlap with dots row; reduced when settings moved up 80px from prior +80px offset */
         margin-top: -16px;
       }
       .frame-root__card-settings__toggle {
@@ -888,7 +880,6 @@
       }
 
       /* ─── Page-load intro sequence (slightly slower); first bank card never animates ─── */
-      .frame-root.cd-intro .frame-root__header-img,
       .frame-root.cd-intro .frame-root__creditcard-below,
       .frame-root.cd-intro .frame-root__card-settings,
       .frame-root.cd-intro .content {
@@ -931,12 +922,6 @@
       }
 
       /* Initial: only first card area; chrome hidden / collapsed */
-      .frame-root.cd-intro .frame-root__header-img {
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transform: translateY(-40px);
-      }
       .frame-root.cd-intro .frame-root__bottombar {
         aspect-ratio: unset;
         max-height: 0;
@@ -987,12 +972,7 @@
         pointer-events: none;
       }
 
-      /* Step 2: top (iOS) bar + bottom bar */
-      .frame-root.cd-intro.cd-intro--bars .frame-root__header-img {
-        max-height: 120px;
-        opacity: 1;
-        transform: translateY(0);
-      }
+      /* Step 2: bottom bar */
       .frame-root.cd-intro.cd-intro--bars .frame-root__bottombar {
         max-height: 100px;
         min-height: 78px;
@@ -1054,13 +1034,6 @@
       <div class="mobile-page__bg" aria-hidden="true"></div>
       <div class="mobile-page__gradient" aria-hidden="true"></div>
     <div class="frame-root cd-intro">
-      <img
-        class="frame-root__header-img"
-        src="assets/ios-browser-header.png"
-        alt=""
-        width="360"
-        draggable="false"
-      />
       <div class="frame-root__mycards-header">
         <img
           class="frame-root__mycards-svg"
