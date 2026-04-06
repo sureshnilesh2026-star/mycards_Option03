@@ -36,8 +36,8 @@
         font-family: Inter, system-ui, sans-serif;
         -webkit-tap-highlight-color: transparent;
         min-height: 100vh;
-        /* Page chrome outside the phone frame */
-        background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+        /* Page chrome outside the phone frame (Tailwind bg-neutral-800) */
+        background: #262626;
       }
       /* Mobile frame — top hero gradient */
       .etb-top-gradient {
@@ -134,7 +134,7 @@
       PAGE LAYERS (bottom → top, per region)
 
       [Viewport — body]
-        L0  Page chrome gradient (CSS on body; outside phone frame)
+        L0  Page chrome gray #262626 / bg-neutral-800 on body (outside phone frame)
 
       [Mobile frame — .frame-root, 360×800, flex column]
         L1  Hero block (.h-hero, 431px) — stacking context
