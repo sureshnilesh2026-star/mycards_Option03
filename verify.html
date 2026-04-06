@@ -68,17 +68,22 @@
         }
       }
       /* WalletFinal animation: start far below, then move to center */
-      /* Credit cards: separate layers, animate from translateY(1000px) to settle */
+      /* Credit cards: start below the visible frame so they read as rising from the bottom, not beside the wallet */
       .card-layer {
         opacity: 0;
-        /* Keep X centered during Y animation */
-        transform: translateX(-50%) translateY(1000px);
+        /* Keep X centered during Y animation; 100dvh ensures off-screen on tall viewports (fixed 1000px was not enough) */
+        transform: translateX(-50%) translateY(calc(100dvh + 160px));
         will-change: transform, opacity;
         /* Staggered starts + spring settle (overshoot easing) */
         transition:
           transform 780ms cubic-bezier(0.34, 1.15, 0.55, 1),
           opacity 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
         pointer-events: none;
+      }
+      @supports not (height: 100dvh) {
+        .card-layer {
+          transform: translateX(-50%) translateY(calc(100vh + 160px));
+        }
       }
       .card-layer.card-in {
         opacity: 1;
@@ -132,6 +137,24 @@
       }
       #digit-display {
         text-shadow: none;
+      }
+      /* +110px right vs centered on card (was left-1/2 −translate-x-1/2) */
+      #card-verify-digits {
+        transform: translateX(calc(-50% + 110px));
+      }
+      /* “Select any card…” — JS sets top to (stack top − 4px); −100% keeps a 4px gap below text */
+      #card-select-text {
+        transform: translateX(-50%);
+      }
+      #card-select-text.card-select-text--above-stack {
+        transform: translateX(-50%) translateY(-100%);
+      }
+      #choose-another-card {
+        transform: translateX(-50%);
+      }
+      /* “Add Card” after Verify — top set so control sits CARD_ADD_LINK_GAP px above stack */
+      #choose-another-card.choose-another--above-stack {
+        transform: translateX(-50%) translateY(-100%);
       }
       /* Fine-tune per asset — number row / last-4 slot varies slightly */
       #card-millenia .card-oncard-digits {
@@ -299,7 +322,7 @@
       <!-- Separate cards (use exact card PNGs); wrapper retains .card-layer motion -->
       <div
         id="card-infinia"
-        class="card-layer absolute left-1/2 top-[502px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
+        class="card-layer absolute left-1/2 top-[292px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
       >
         <img
           src="assets/card-infinia.png"
@@ -314,7 +337,7 @@
       </div>
       <div
         id="card-tanue"
-        class="card-layer absolute left-1/2 top-[553px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
+        class="card-layer absolute left-1/2 top-[343px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
       >
         <img
           src="assets/card-tatanuo.png"
@@ -329,7 +352,7 @@
       </div>
       <div
         id="card-swiggy"
-        class="card-layer absolute left-1/2 top-[604px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
+        class="card-layer absolute left-1/2 top-[394px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
       >
         <img
           src="assets/card-swiggy.png"
@@ -344,7 +367,7 @@
       </div>
       <div
         id="card-millenia"
-        class="card-layer absolute left-1/2 top-[655px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
+        class="card-layer absolute left-1/2 top-[445px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
       >
         <img
           src="assets/card-millenia.png"
@@ -360,7 +383,7 @@
 
       <p
         id="card-select-text"
-        class="absolute left-1/2 top-[490px] -translate-x-1/2 z-[30] text-[12px] font-semibold text-[#00875F] whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none"
+        class="absolute left-1/2 top-[280px] z-[30] text-[12px] font-semibold text-[#00875F] whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none"
       >
         Select any card to verify
       </p>
@@ -368,7 +391,7 @@
       <button
         id="choose-another-card"
         type="button"
-        class="absolute left-1/2 top-[515px] -translate-x-1/2 z-[30] text-[12px] font-semibold text-[#1C3FCA] whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-300 hover:underline"
+        class="absolute left-1/2 top-[305px] z-[30] text-[12px] font-semibold text-[#1C3FCA] whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-300 hover:underline"
       >
         Choose Another Card
       </button>
@@ -384,7 +407,7 @@
       <!-- Last-4 digits display (floating strip + .card-oncard-digits on each card; see CSS + DIGITS_* in script) -->
       <div
         id="card-verify-digits"
-        class="absolute left-[282px] top-[420px] -translate-x-1/2 z-[6] opacity-0 pointer-events-none will-change-[top,opacity]"
+        class="absolute left-1/2 top-[210px] z-[6] opacity-0 pointer-events-none will-change-[top,opacity]"
         aria-hidden="true"
       >
         <span
@@ -517,16 +540,92 @@
         var FINAL_PICK_TOP_PX = 80;
         /* digit strip sits this far below the active card’s top (px); same offset after Done */
         var DIGITS_TOP_OFFSET = 118;
-        var CARD_TOP_KEYBOARD = 310;
-        var CARD_TOP_AFTER_DONE = 470;
-        var DIGITS_LEFT = "282px";
+        var CARD_TOP_KEYBOARD = 280;
+        var CARD_TOP_AFTER_DONE = 440;
+        var DIGITS_LEFT = "50%";
         var CARD_MOVE_EASE = "top 600ms cubic-bezier(0.2, 0.8, 0.2, 1)";
-        var CARD_STACK_TOPS_PX = [502, 553, 604, 655];
+        /* Fallback tops before wallet reaches .wallet-bottom (no-js / first paint) */
+        var CARD_STACK_TOPS_PX = [292, 343, 394, 445];
+        var CARD_STACK_GAP = 51;
+        /* Y of topmost card in stack = (wallet img top in frame) − this (see getWalletTopInFrame) */
+        var CARD_STACK_OFFSET_ABOVE_WALLET = 210;
+        /* Vertical gap between hint / “Add Card” bottom and top-of-stack (px) */
+        var CARD_SELECT_GAP_ABOVE_STACK = 4;
+        var CARD_ADD_LINK_GAP_ABOVE_STACK = 4;
         var STACK_RETURN_RISE_PX = 400;
         var STACK_RETURN_ANIM_MS = 900;
         var INFO_TITLE_VERIFY = "Let’s Verify if It’s You";
         var INFO_TITLE_STACK = "Select Card to Continue";
         var FINAL_PICK_ANIM_MS = 600;
+
+        function getWalletTopInFrame() {
+          if (!frameShell || !el) return 0;
+          var f = frameShell.getBoundingClientRect();
+          var w = el.getBoundingClientRect();
+          return w.top - f.top;
+        }
+
+        function getStackTopsPx() {
+          if (!el || !el.classList.contains("wallet-bottom")) {
+            return CARD_STACK_TOPS_PX.slice();
+          }
+          var walletTop = getWalletTopInFrame();
+          var base = walletTop - CARD_STACK_OFFSET_ABOVE_WALLET;
+          var out = [];
+          for (var si = 0; si < cards.length; si++) {
+            out.push(base + si * CARD_STACK_GAP);
+          }
+          return out;
+        }
+
+        function syncCardSelectStackHint(stackBaseTopPx) {
+          if (!cardSelectText) return;
+          if (isVerifying || postVerifyFinalStack) return;
+          cardSelectText.classList.add("card-select-text--above-stack");
+          cardSelectText.style.top = stackBaseTopPx - CARD_SELECT_GAP_ABOVE_STACK + "px";
+        }
+
+        function getStackBaseTopPx() {
+          if (!el || !frameShell || !el.classList.contains("wallet-bottom")) {
+            return CARD_STACK_TOPS_PX[0];
+          }
+          return getWalletTopInFrame() - CARD_STACK_OFFSET_ABOVE_WALLET;
+        }
+
+        function syncAddCardLinkAboveStack(optStackBaseTopPx) {
+          if (!chooseAnotherCard) return;
+          if (chooseAnotherCard.textContent !== "Add Card") return;
+          var base =
+            optStackBaseTopPx != null && !isNaN(parseFloat(optStackBaseTopPx, 10))
+              ? parseFloat(optStackBaseTopPx, 10)
+              : getStackBaseTopPx();
+          if (isNaN(base)) return;
+          chooseAnotherCard.classList.add("choose-another--above-stack");
+          chooseAnotherCard.style.top = base - CARD_ADD_LINK_GAP_ABOVE_STACK + "px";
+        }
+
+        function applyCardStackTops() {
+          if (!frameShell || !el) return;
+          if (!el.classList.contains("wallet-bottom")) return;
+          if (isVerifying) return;
+          if (postVerifyFinalPickDone) return;
+          var walletTop = getWalletTopInFrame();
+          var base = walletTop - CARD_STACK_OFFSET_ABOVE_WALLET;
+          for (var si = 0; si < cards.length; si++) {
+            if (!cards[si]) continue;
+            cards[si].style.top = base + si * CARD_STACK_GAP + "px";
+          }
+          syncCardSelectStackHint(base);
+          if (postVerifyFinalStack) {
+            syncAddCardLinkAboveStack();
+          }
+        }
+
+        function onWalletBottomSettled() {
+          if (!el || !frameShell) return;
+          if (!el.classList.contains("wallet-bottom")) return;
+          applyCardStackTops();
+        }
 
         function cardDetailsHref(stackIdx) {
           var slug = CARD_SLUGS[stackIdx] || "swiggy";
@@ -543,6 +642,17 @@
             if (cards[si] === cardEl) return si;
           }
           return -1;
+        }
+
+        function syncDigitsWrapToActiveCard() {
+          if (!digitsWrap || !activeCard) return;
+          var raw = activeCard.style.top;
+          var t = parseFloat(raw, 10);
+          if (isNaN(t)) {
+            t = parseFloat(getComputedStyle(activeCard).top, 10);
+          }
+          if (isNaN(t)) return;
+          digitsWrap.style.top = t + DIGITS_TOP_OFFSET + "px";
         }
 
         function renderDigits() {
@@ -608,6 +718,7 @@
           }
 
           if (chooseAnotherCard) {
+            chooseAnotherCard.classList.remove("choose-another--above-stack");
             chooseAnotherCard.classList.add("opacity-0");
             chooseAnotherCard.classList.remove("opacity-100");
             chooseAnotherCard.classList.add("pointer-events-none");
@@ -651,6 +762,7 @@
           }
           if (chooseAnotherCard) {
             chooseAnotherCard.textContent = "Choose Another Card";
+            chooseAnotherCard.classList.remove("choose-another--above-stack");
             chooseAnotherCard.style.top = "";
           }
 
@@ -689,6 +801,7 @@
           postVerifyFinalStack = false;
           postVerifyFinalPickDone = false;
           lastVerifiedStackIndex = -1;
+          applyCardStackTops();
         }
 
         function animateFinalStackPick(pickedStackIndex) {
@@ -794,8 +907,9 @@
 
           // Swap label + show choose another card.
           if (cardSelectText) {
+            cardSelectText.classList.remove("card-select-text--above-stack");
             cardSelectText.textContent = "Enter last 4 digits to verify this Card";
-            cardSelectText.style.top = "258px";
+            cardSelectText.style.top = "228px";
             cardSelectText.style.color = "";
             cardSelectText.style.fontWeight = "";
             cardSelectText.style.fontSize = "";
@@ -804,8 +918,9 @@
             cardSelectText.removeAttribute("aria-hidden");
           }
           if (chooseAnotherCard) {
+            chooseAnotherCard.classList.remove("choose-another--above-stack");
             chooseAnotherCard.textContent = "Choose Another Card";
-            chooseAnotherCard.style.top = "288px";
+            chooseAnotherCard.style.top = "258px";
             chooseAnotherCard.style.transition = "";
             chooseAnotherCard.classList.remove("opacity-0");
             chooseAnotherCard.classList.add("opacity-100");
@@ -835,7 +950,7 @@
             digitsWrap.setAttribute("aria-hidden", "false");
             setFloatingDigitStripActive(true);
             requestAnimationFrame(function () {
-              digitsWrap.style.top = CARD_TOP_KEYBOARD + DIGITS_TOP_OFFSET + "px";
+              syncDigitsWrapToActiveCard();
             });
           }
 
@@ -861,10 +976,12 @@
             infoLayer.style.top = "82px";
           }
           if (cardSelectText) {
-            cardSelectText.style.top = "418px";
+            cardSelectText.classList.remove("card-select-text--above-stack");
+            cardSelectText.style.top = "388px";
           }
           if (chooseAnotherCard) {
-            chooseAnotherCard.style.top = "448px";
+            chooseAnotherCard.classList.remove("choose-another--above-stack");
+            chooseAnotherCard.style.top = "418px";
           }
           if (activeCard) {
             activeCard.style.transition = CARD_MOVE_EASE;
@@ -873,7 +990,7 @@
           if (digitsWrap && activeCard) {
             digitsWrap.style.zIndex = "35";
             digitsWrap.style.transition = CARD_MOVE_EASE + ", opacity 300ms ease-out";
-            digitsWrap.style.top = CARD_TOP_AFTER_DONE + DIGITS_TOP_OFFSET + "px";
+            syncDigitsWrapToActiveCard();
           }
           if (verifyCardCta) {
             verifyCardCta.classList.remove("opacity-0");
@@ -906,19 +1023,33 @@
           postVerifyFinalPickDone = false;
           renderDigits();
 
-          if (el) {
+          var stackEase = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+          var stackMs = STACK_RETURN_ANIM_MS;
+
+          /* Targets for seated wallet (same as post–wallet-bottom layout), measured with transition off */
+          var stackTopsReturn;
+          if (el && frameShell) {
             el.classList.remove("wallet-exit", "wallet-drop-away");
-            el.classList.remove("wallet-bottom");
-            el.classList.add("wallet-rise-start");
-            void el.offsetHeight;
-            el.style.transition =
-              "transform " + STACK_RETURN_ANIM_MS + "ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+            var walletPrevTransition = el.style.transition;
+            el.style.transition = "none";
             el.classList.remove("wallet-rise-start");
             el.classList.add("wallet-bottom");
-            window.setTimeout(function () {
-              el.style.transition = "";
-            }, STACK_RETURN_ANIM_MS);
+            void el.offsetHeight;
+            var wTopMeas =
+              el.getBoundingClientRect().top - frameShell.getBoundingClientRect().top;
+            var stackBaseMeas = wTopMeas - CARD_STACK_OFFSET_ABOVE_WALLET;
+            stackTopsReturn = [];
+            for (var sm = 0; sm < cards.length; sm++) {
+              stackTopsReturn.push(stackBaseMeas + sm * CARD_STACK_GAP);
+            }
+            el.classList.remove("wallet-bottom");
+            el.classList.add("wallet-rise-start");
+            el.style.transition = walletPrevTransition || "";
+            void el.offsetHeight;
+          } else {
+            stackTopsReturn = getStackTopsPx();
           }
+
           if (keyboard) {
             keyboard.classList.add("opacity-0", "pointer-events-none", "translate-y-0");
             keyboard.classList.remove("opacity-100", "pointer-events-auto", "translate-y-[320px]");
@@ -968,18 +1099,15 @@
           }
           if (chooseAnotherCard) {
             chooseAnotherCard.textContent = "Add Card";
-            chooseAnotherCard.style.top = "490px";
+            syncAddCardLinkAboveStack(stackTopsReturn[0]);
             chooseAnotherCard.classList.remove("opacity-0", "pointer-events-none");
             chooseAnotherCard.classList.add("opacity-100", "pointer-events-auto");
           }
 
-          var stackEase = "cubic-bezier(0.2, 0.8, 0.2, 1)";
-          var stackMs = STACK_RETURN_ANIM_MS;
-
           for (var i = 0; i < cards.length; i++) {
             var c = cards[i];
             if (!c) continue;
-            var stackTop = CARD_STACK_TOPS_PX[i];
+            var stackTop = stackTopsReturn[i];
             c.style.pointerEvents = "none";
             c.style.zIndex = String(6 + i);
             c.style.transition = "none";
@@ -999,27 +1127,55 @@
           }
           void (cards[0] && cards[0].offsetHeight);
 
-          for (var j = 0; j < cards.length; j++) {
-            var cj = cards[j];
-            if (!cj) continue;
-            var stackTopJ = CARD_STACK_TOPS_PX[j];
-            if (j === activeIdx) {
-              cj.style.transition =
-                "top " + stackMs + "ms " + stackEase + ", transform " + stackMs + "ms " + stackEase;
+          /* Prime transition, then apply end state on a later frame — same-frame transition+value often skips interpolation */
+          function primeStackReturnTransitions() {
+            for (var j = 0; j < cards.length; j++) {
+              var cj = cards[j];
+              if (!cj) continue;
+              if (j === activeIdx) {
+                cj.style.transition =
+                  "top " + stackMs + "ms " + stackEase + ", transform " + stackMs + "ms " + stackEase;
+              } else {
+                cj.style.transition =
+                  "transform " +
+                  stackMs +
+                  "ms " +
+                  stackEase +
+                  ", opacity " +
+                  stackMs +
+                  "ms " +
+                  stackEase;
+              }
+            }
+            void (cards[0] && cards[0].offsetHeight);
+          }
+
+          function applyStackReturnEndStateAndWallet() {
+            if (el) {
+              el.style.transition =
+                "transform " + stackMs + "ms " + stackEase;
+              el.classList.remove("wallet-rise-start");
+              el.classList.add("wallet-bottom");
+              window.setTimeout(function () {
+                if (el) el.style.transition = "";
+              }, stackMs);
+            }
+            for (var j = 0; j < cards.length; j++) {
+              var cj = cards[j];
+              if (!cj) continue;
+              var stackTopJ = stackTopsReturn[j];
               cj.style.top = stackTopJ + "px";
-              cj.style.transform = "translateX(-50%) translateY(0)";
-              cj.style.opacity = "1";
-            } else {
-              cj.style.transition =
-                "transform " +
-                stackMs +
-                "ms " +
-                stackEase +
-                ", opacity 550ms ease-out";
               cj.style.transform = "translateX(-50%) translateY(0)";
               cj.style.opacity = "1";
             }
           }
+
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              primeStackReturnTransitions();
+              requestAnimationFrame(applyStackReturnEndStateAndWallet);
+            });
+          });
 
           window.setTimeout(function () {
             postVerifyFinalStack = true;
@@ -1027,10 +1183,12 @@
               var ck = cards[k];
               if (!ck) continue;
               ck.style.transition = "";
+              ck.style.transitionDelay = "";
               ck.style.pointerEvents = "auto";
               ck.style.cursor = "pointer";
             }
-          }, stackMs);
+            applyCardStackTops();
+          }, stackMs + 120);
         }
 
         // Card click handlers: all cards clickable; after Verify → final stack, any card runs pick-up + card_details navigation.
@@ -1121,8 +1279,7 @@
           }
           var rect = el.getBoundingClientRect();
           var h = rect.height || 0;
-          var frameEl = document.querySelector(".frame-root");
-          var frameH = frameEl ? frameEl.getBoundingClientRect().height : window.innerHeight;
+          var frameH = frameShell ? frameShell.getBoundingClientRect().height : window.innerHeight;
           // Wallet is centered vertically (top:50% + translateY(-50%)). Move so it sits near frame bottom.
           // Push an extra +200px down from the bottom-aligned position, then move 25px up.
           var delta = frameH / 2 - h / 2 + 200 - 25;
@@ -1130,6 +1287,7 @@
           el.classList.remove("wallet-in");
           el.classList.remove("wallet-resize");
           el.classList.add("wallet-bottom");
+          window.setTimeout(onWalletBottomSettled, WALLET_TO_BOTTOM_ANIM_MS + 40);
         }, WALLET_FIRST_ANIM_MS + WALLET_AFTER_FIRST_PAUSE_MS);
 
         // Cards pop out 100ms after the wallet finishes moving to the bottom (700ms transform on #wallet-final).
@@ -1170,6 +1328,20 @@
             WALLET_TO_BOTTOM_ANIM_MS +
             CARDS_AFTER_WALLET_MS
         );
+
+        var stackResizeTimer = null;
+        window.addEventListener("resize", function () {
+          window.clearTimeout(stackResizeTimer);
+          stackResizeTimer = window.setTimeout(function () {
+            applyCardStackTops();
+            if (isVerifying && activeCard) {
+              syncDigitsWrapToActiveCard();
+            }
+            if (chooseAnotherCard && chooseAnotherCard.textContent === "Add Card") {
+              syncAddCardLinkAboveStack();
+            }
+          }, 120);
+        });
       })();
     </script>
   </body>
