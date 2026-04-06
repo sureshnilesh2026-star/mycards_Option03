@@ -17,7 +17,7 @@
           extend: {
             fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
             colors: {
-              brand: { DEFAULT: "#1d39c4", hover: "#172ea3", link: "#1d39c4" },
+              brand: { DEFAULT: "#1C3FCA", hover: "#152f9e", link: "#1C3FCA" },
             },
             boxShadow: {
               sheet: "0 -8px 24px rgba(0, 0, 0, 0.08)",
@@ -87,8 +87,8 @@
         color: transparent;
       }
       .mobile-field__input:focus {
-        border-color: #1d39c4;
-        box-shadow: 0 0 0 2px rgba(29, 57, 196, 0.2);
+        border-color: #1C3FCA;
+        box-shadow: 0 0 0 2px rgba(28, 63, 202, 0.2);
       }
       .mobile-field__input:focus,
       .mobile-field__input:not(:placeholder-shown) {
@@ -121,7 +121,7 @@
         transform: translateY(-50%);
         font-size: 12px;
         font-weight: 600;
-        color: #1d39c4;
+        color: #1C3FCA;
       }
       /* OTP dots: six slots default #D2D5DB; filled digits #111827 (scoped so Tailwind won’t override) */
       #otp-code-field .otp-dot {
@@ -197,7 +197,7 @@
         <!-- Login Details top border (4px gradient) -->
         <div
           aria-hidden="true"
-          class="absolute left-0 right-0 top-0 h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#3D62F3_50%,#FFB1B6_100%)] z-[1]"
+          class="absolute left-0 right-0 top-0 h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#1C3FCA_50%,#FFB1B6_100%)] z-[1]"
         ></div>
         <div class="relative z-10 flex flex-col pt-6 pb-[30px]">
           <h2 class="text-[17px] font-bold text-neutral-900 leading-tight mb-2">Let’s Get Started</h2>
@@ -224,6 +224,7 @@
             type="button"
             id="btn-otp"
             class="mt-5 w-full rounded-xl bg-brand py-3 text-[14px] font-bold text-white tracking-wide shadow-sm transition-colors hover:bg-brand-hover active:bg-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
+            aria-label="Get OTP"
           >
             <span id="otp-label">Get OTP</span>
             <span id="otp-spinner" class="hidden btn-loading">
@@ -273,7 +274,7 @@
         <!-- OTP top gradient edge (4px) -->
         <div
           aria-hidden="true"
-          class="absolute left-0 right-0 top-0 h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#3D62F3_50%,#FFB1B6_100%)]"
+          class="absolute left-0 right-0 top-0 h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#1C3FCA_50%,#FFB1B6_100%)]"
         ></div>
 
         <div class="pt-6 px-[32px] h-full min-h-0 flex flex-col items-center gap-[24px] relative">
@@ -287,7 +288,7 @@
             <a
               href="#"
               id="otp-change-mobile"
-              class="mt-2 inline-block text-[14px] font-medium text-[#1c3fca] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1c3fca] rounded"
+              class="mt-2 inline-block text-[14px] font-medium text-[#1C3FCA] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C3FCA] rounded"
             >
               Change Mobile Number
             </a>
@@ -323,7 +324,7 @@
             <a
               href="#"
               id="otp-resend"
-              class="text-[#1c3fca] font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1c3fca] rounded"
+              class="text-[#1C3FCA] font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C3FCA] rounded"
             >
               Resend OTP
             </a>
@@ -333,7 +334,7 @@
           <button
             type="button"
             id="otp-verify"
-            class="w-full shrink-0 bg-[#1c3fca] text-white rounded-[11px] py-[12px] text-[16px] font-semibold shadow-sm"
+            class="w-full shrink-0 bg-[#1C3FCA] text-white rounded-[11px] py-[12px] text-[16px] font-semibold shadow-sm"
           >
             Verify OTP
           </button>
@@ -474,12 +475,15 @@
 
           setInfoText(defaultInfoText, false);
           btnOtp.disabled = true;
-          otpLabel.textContent = "Sending…";
+          btnOtp.setAttribute("aria-busy", "true");
+          otpLabel.classList.add("hidden");
           otpSpinner.classList.remove("hidden");
           setTimeout(function () {
             otpSpinner.classList.add("hidden");
+            otpLabel.classList.remove("hidden");
             otpLabel.textContent = "Get OTP";
             btnOtp.disabled = false;
+            btnOtp.setAttribute("aria-busy", "false");
 
             // Open OTP overlay from bottom of the same page
             openOtp(v.slice(-4));
