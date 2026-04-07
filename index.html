@@ -416,6 +416,8 @@
         var btnOtp = document.getElementById("btn-otp");
         var otpLabel = document.getElementById("otp-label");
         var otpSpinner = document.getElementById("otp-spinner");
+        var frameRoot = document.querySelector(".frame-root");
+        var isMobileInputFocused = false;
 
         var defaultInfoText = "You’ll receive an OTP on this number";
 
@@ -435,6 +437,40 @@
           hint.classList.add("hidden");
           setInfoText(defaultInfoText, false);
         });
+
+        function resetKeyboardShift() {
+          if (!frameRoot) return;
+          frameRoot.style.transform = "";
+          frameRoot.style.transition = "";
+        }
+
+        function updateKeyboardShift() {
+          if (!isMobileInputFocused || !frameRoot) return;
+          var vv = window.visualViewport;
+          var viewportHeight = vv ? vv.height : window.innerHeight;
+          var ctaRect = btnOtp.getBoundingClientRect();
+          var safeBottom = viewportHeight - 12;
+          var overlap = Math.max(0, ctaRect.bottom - safeBottom);
+          var shiftY = Math.min(overlap, 260);
+          frameRoot.style.transition = "transform 180ms ease";
+          frameRoot.style.transform = shiftY > 0 ? "translateY(-" + Math.round(shiftY) + "px)" : "";
+          window.scrollTo(0, 0);
+        }
+
+        mobile.addEventListener("focus", function () {
+          isMobileInputFocused = true;
+          setTimeout(updateKeyboardShift, 50);
+        });
+
+        mobile.addEventListener("blur", function () {
+          isMobileInputFocused = false;
+          resetKeyboardShift();
+        });
+
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", updateKeyboardShift);
+          window.visualViewport.addEventListener("scroll", updateKeyboardShift);
+        }
 
         function openOtp(last4) {
           otpLast4.textContent = last4;
