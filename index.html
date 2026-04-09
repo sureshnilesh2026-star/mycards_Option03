@@ -6,6 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=overlays-content"
     />
+    <!-- Matches .frame-root gradient top (#080326) for mobile browser chrome / status tint -->
+    <meta name="theme-color" content="#080326" />
     <title>MyCards — ETB First Time</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -330,6 +332,7 @@
             <!-- Real input (tap to focus; digits captured in JS) -->
             <input
               id="otp-raw"
+              type="tel"
               inputmode="numeric"
               autocomplete="one-time-code"
               pattern="[0-9]*"
@@ -472,7 +475,16 @@
           window.visualViewport.addEventListener("scroll", updateKeyboardShift);
         }
 
+        function focusOtpField() {
+          try {
+            otpRaw.focus({ preventScroll: true });
+          } catch (e) {
+            otpRaw.focus();
+          }
+        }
+
         function openOtp(last4) {
+          if (mobile) mobile.blur();
           otpLast4.textContent = last4;
           otpRaw.value = "";
           otpRaw.dispatchEvent(new Event("input"));
@@ -483,9 +495,13 @@
           otpBackdrop.classList.remove("opacity-0", "pointer-events-none");
           otpBackdrop.classList.add("opacity-100", "pointer-events-auto");
 
-          setTimeout(function () {
-            otpRaw.focus();
-          }, 100);
+          // Focus must run in the same user gesture as "Get OTP" on iOS/iPad; avoid long setTimeout before this.
+          // Double rAF waits for pointer-events/layout after the sheet opens.
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              focusOtpField();
+            });
+          });
         }
 
         function closeOtp() {
@@ -533,15 +549,16 @@
           btnOtp.setAttribute("aria-busy", "true");
           otpLabel.classList.add("hidden");
           otpSpinner.classList.remove("hidden");
+
+          // Open OTP immediately so otpRaw.focus stays inside the tap's user activation (mobile Safari / iPad).
+          openOtp(v.slice(-4));
+
           setTimeout(function () {
             otpSpinner.classList.add("hidden");
             otpLabel.classList.remove("hidden");
             otpLabel.textContent = "Get OTP";
             btnOtp.disabled = false;
             btnOtp.setAttribute("aria-busy", "false");
-
-            // Open OTP overlay from bottom of the same page
-            openOtp(v.slice(-4));
           }, 1500);
         });
       })();
