@@ -318,19 +318,26 @@
       ></div>
       <div
         id="otp-sheet"
-        class="absolute left-0 right-0 bottom-0 w-full max-w-full bg-[#fdfeff] rounded-t-[26px] overflow-hidden translate-y-full opacity-0 pointer-events-none transition-transform duration-300 ease-out transition-opacity z-[50]"
+        class="absolute left-0 right-0 bottom-0 w-full max-w-full bg-[#fdfeff] rounded-t-[26px] overflow-hidden translate-y-full opacity-0 pointer-events-none transition-transform duration-300 ease-out transition-opacity z-[50] flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-label="Enter OTP"
       >
-        <!-- OTP top gradient edge (4px) -->
-        <div
-          aria-hidden="true"
-          class="absolute left-0 right-0 top-0 z-[2] h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#1C3FCA_50%,#FFB1B6_100%)] pointer-events-none"
-        ></div>
+        <div class="shrink-0 relative z-[2]">
+          <div
+            class="flex justify-center pt-2.5 pb-2"
+            aria-hidden="true"
+          >
+            <span class="block h-1 w-9 rounded-full bg-[#d1d5db]"></span>
+          </div>
+          <div
+            aria-hidden="true"
+            class="h-[4px] w-full bg-[linear-gradient(90deg,#FFB6BA_0%,#1C3FCA_50%,#FFB1B6_100%)]"
+          ></div>
+        </div>
 
         <div
-          class="otp-sheet__scroll pt-6 px-[32px] pb-4 flex flex-col items-center gap-[18px] relative min-h-0"
+          class="otp-sheet__scroll pt-4 px-[32px] pb-4 flex flex-col items-center gap-[18px] relative min-h-0"
         >
           <div class="w-[312px] text-center shrink-0">
             <p class="font-semibold text-[#222] text-[18px] leading-[1.4]">Enter OTP</p>
@@ -498,8 +505,8 @@
           return vv.offsetTop + vv.height;
         }
 
-        /** Gap above keyboard; avoid stacking huge extras (they clip the sheet top) */
-        var OTP_GAP_ABOVE_KB = 14;
+        /** Small gap so sheet bottom sits just above keyboard / accessory (reference layout) */
+        var OTP_GAP_ABOVE_KB = 3;
         /** False until bottom-sheet slide-in ends — keeps keyboard overlap during slide, then lifts */
         var otpSheetSlideReady = false;
         var otpInsetDebounceTimer = null;
@@ -538,20 +545,24 @@
             var visibleTop = vv ? vv.offsetTop : 0;
             var visibleBottom = getVisualViewportBottom();
             var verifyRect = otpVerifyBtn.getBoundingClientRect();
-            var liftForVerify = Math.round(
-              verifyRect.bottom - visibleBottom + OTP_GAP_ABOVE_KB
+            var liftForVerify = Math.max(
+              0,
+              Math.round(
+                verifyRect.bottom - visibleBottom + OTP_GAP_ABOVE_KB
+              )
             );
             var fromInset =
-              inset > 24 ? Math.round(inset + OTP_GAP_ABOVE_KB) : 0;
-            var next = Math.max(fromInset, liftForVerify, 0);
-            if (next < 8) {
+              inset > 16 ? Math.round(inset + OTP_GAP_ABOVE_KB) : 0;
+            /* Match reference: anchor to keyboard inset, only lift more if CTA would overlap */
+            var next = Math.max(fromInset, liftForVerify);
+            if (next < 4) {
               lastOtpBottomPx = null;
               otpSheet.style.bottom = "";
               otpSheet.style.maxHeight = "";
               return;
             }
-            var availH = Math.floor(visibleBottom - visibleTop - 10);
-            var maxSheet = Math.max(220, Math.min(418, availH - next - 6));
+            var availH = Math.floor(visibleBottom - visibleTop - 8);
+            var maxSheet = Math.max(240, Math.min(418, availH - next - 4));
             otpSheet.style.bottom = next + "px";
             otpSheet.style.maxHeight = maxSheet + "px";
             var topLimit = visibleTop + 8;
@@ -559,7 +570,7 @@
             if (st < topLimit) {
               next = Math.max(8, next - Math.ceil(topLimit - st));
               otpSheet.style.bottom = next + "px";
-              maxSheet = Math.max(220, Math.min(418, availH - next - 6));
+              maxSheet = Math.max(240, Math.min(418, availH - next - 4));
               otpSheet.style.maxHeight = maxSheet + "px";
             }
             lastOtpBottomPx = next;
