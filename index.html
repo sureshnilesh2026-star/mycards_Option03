@@ -30,7 +30,7 @@
             spacing: {
               /* frame: header (hug) + hero (fill) + login sheet (hug content); OTP overlay still uses h-sheet */
               header: "48px",
-              sheet: "338px",
+              sheet: "418px",
             },
           },
         },
@@ -160,6 +160,16 @@
           opacity 300ms cubic-bezier(0, 0, 0.2, 1),
           bottom 320ms cubic-bezier(0.25, 0.1, 0.25, 1);
       }
+      #login-sheet {
+        transition:
+          transform 280ms cubic-bezier(0, 0, 0.2, 1),
+          opacity 280ms ease;
+      }
+      .frame-root--otp-open #login-sheet {
+        transform: translateY(108%);
+        opacity: 0;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body class="min-h-[100dvh] min-h-screen p-0 box-border w-full max-w-none">
@@ -220,6 +230,7 @@
 
       <!-- Bottom sheet: interactive layer (matches Figma spacing; graphics above are unchanged) -->
       <div
+        id="login-sheet"
         class="flex flex-col flex-none h-auto min-h-0 shrink-0 bg-white rounded-t-[24px] shadow-sheet relative z-20 overflow-hidden px-6 pt-0 pb-0"
       >
         <!-- Login Details top border (4px gradient) -->
@@ -475,6 +486,9 @@
         }
 
         var OTP_ABOVE_KEYBOARD = 72;
+        var OTP_BOTTOM_EXTRA_PX = 80;
+        /** False until bottom-sheet slide-in ends — keeps keyboard overlap during slide, then lifts */
+        var otpSheetSlideReady = false;
         var otpInsetDebounceTimer = null;
         var lastOtpBottomPx = null;
 
@@ -502,6 +516,7 @@
 
         function applyOtpKeyboardInset() {
           if (!otpSheet || !otpRaw || !otpVerifyBtn) return;
+          if (!otpSheetSlideReady) return;
           var inset = getVisualKeyboardInset();
           var otpFocused = document.activeElement === otpRaw;
           var sheetOpen = otpSheet.classList.contains("translate-y-0");
@@ -510,13 +525,15 @@
             var verifyRect = otpVerifyBtn.getBoundingClientRect();
             var pad = 20;
             var liftForVerify = verifyRect.bottom - visibleBottom + pad;
-            var fromInset = Math.max(0, inset) + OTP_ABOVE_KEYBOARD;
-            var next = Math.max(Math.round(fromInset), Math.round(liftForVerify));
-            if (next < 12) {
+            var fromInset =
+              inset > 48 ? Math.round(inset + OTP_ABOVE_KEYBOARD) : 0;
+            var base = Math.max(fromInset, Math.round(liftForVerify));
+            if (base < 16) {
               lastOtpBottomPx = null;
               otpSheet.style.bottom = "";
               return;
             }
+            var next = base + OTP_BOTTOM_EXTRA_PX;
             if (lastOtpBottomPx !== null && Math.abs(next - lastOtpBottomPx) < 6) {
               return;
             }
@@ -559,13 +576,33 @@
           otpSheet.style.bottom = "";
         });
 
+        function scheduleOtpLiftAfterSlide() {
+          var done = false;
+          function run() {
+            if (done) return;
+            done = true;
+            otpSheetSlideReady = true;
+            queueOtpKeyboardInset();
+          }
+          function onTransitionEnd(e) {
+            if (e.target !== otpSheet || e.propertyName !== "transform") return;
+            otpSheet.removeEventListener("transitionend", onTransitionEnd);
+            run();
+          }
+          otpSheet.addEventListener("transitionend", onTransitionEnd);
+          setTimeout(run, 360);
+        }
+
         function openOtp(last4) {
+          otpSheetSlideReady = false;
           otpLast4.textContent = last4;
           otpRaw.value = "";
           otpRaw.dispatchEvent(new Event("input"));
           syncOtpDots();
 
           mobile.blur();
+          resetKeyboardShift();
+          if (frameRoot) frameRoot.classList.add("frame-root--otp-open");
 
           clearOtpInsetDebounce();
           lastOtpBottomPx = null;
@@ -579,13 +616,16 @@
           otpRaw.focus({ preventScroll: true });
           requestAnimationFrame(function () {
             otpRaw.focus({ preventScroll: true });
-            queueOtpKeyboardInset();
           });
+          /* During slide-in, keep bottom:0 so keyboard can overlap; lift after sheet settles */
+          scheduleOtpLiftAfterSlide();
         }
 
         function closeOtp() {
+          otpSheetSlideReady = false;
           clearOtpInsetDebounce();
           lastOtpBottomPx = null;
+          if (frameRoot) frameRoot.classList.remove("frame-root--otp-open");
           otpRaw.blur();
           otpSheet.style.bottom = "";
           otpSheet.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
