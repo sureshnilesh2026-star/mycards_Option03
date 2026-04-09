@@ -153,12 +153,12 @@
         color: transparent;
         -webkit-text-fill-color: transparent;
       }
-      /* Smooth lift when browser reports keyboard inset via VisualViewport */
+      /* Sheet slide-in uses transform/opacity only; keyboard lift uses bottom via JS (debounced) */
       #otp-sheet {
         transition:
           transform 300ms cubic-bezier(0, 0, 0.2, 1),
           opacity 300ms cubic-bezier(0, 0, 0.2, 1),
-          bottom 200ms ease;
+          bottom 320ms cubic-bezier(0.25, 0.1, 0.25, 1);
       }
     </style>
   </head>
@@ -468,10 +468,30 @@
           window.scrollTo(0, 0);
         }
 
+        var OTP_ABOVE_KEYBOARD = 40;
+        var otpInsetDebounceTimer = null;
+        var lastOtpBottomPx = null;
+
         function getVisualKeyboardInset() {
           var vv = window.visualViewport;
           if (!vv) return 0;
           return Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        }
+
+        function clearOtpInsetDebounce() {
+          if (otpInsetDebounceTimer !== null) {
+            clearTimeout(otpInsetDebounceTimer);
+            otpInsetDebounceTimer = null;
+          }
+        }
+
+        function queueOtpKeyboardInset() {
+          if (!otpSheet || !otpRaw) return;
+          clearOtpInsetDebounce();
+          otpInsetDebounceTimer = setTimeout(function () {
+            otpInsetDebounceTimer = null;
+            applyOtpKeyboardInset();
+          }, 160);
         }
 
         function applyOtpKeyboardInset() {
@@ -479,16 +499,17 @@
           var inset = getVisualKeyboardInset();
           var otpFocused = document.activeElement === otpRaw;
           var sheetOpen = otpSheet.classList.contains("translate-y-0");
-          if (otpFocused && sheetOpen && inset > 32) {
-            otpSheet.style.bottom = Math.round(inset) + "px";
-          } else {
-            otpSheet.style.bottom = "";
+          if (otpFocused && sheetOpen && inset > 48) {
+            var next = Math.round(inset + OTP_ABOVE_KEYBOARD);
+            if (lastOtpBottomPx !== null && Math.abs(next - lastOtpBottomPx) < 6) {
+              return;
+            }
+            lastOtpBottomPx = next;
+            otpSheet.style.bottom = next + "px";
+            return;
           }
-        }
-
-        function syncViewportKeyboard() {
-          updateKeyboardShift();
-          applyOtpKeyboardInset();
+          lastOtpBottomPx = null;
+          otpSheet.style.bottom = "";
         }
 
         mobile.addEventListener("focus", function () {
@@ -502,17 +523,23 @@
         });
 
         if (window.visualViewport) {
-          window.visualViewport.addEventListener("resize", syncViewportKeyboard);
-          window.visualViewport.addEventListener("scroll", syncViewportKeyboard);
+          window.visualViewport.addEventListener("resize", function () {
+            updateKeyboardShift();
+            queueOtpKeyboardInset();
+          });
+          /* Scroll events fire often during iOS keyboard animation and fight bottom — only shift login field */
+          window.visualViewport.addEventListener("scroll", function () {
+            updateKeyboardShift();
+          });
         }
 
         otpRaw.addEventListener("focus", function () {
-          applyOtpKeyboardInset();
-          setTimeout(applyOtpKeyboardInset, 80);
-          setTimeout(applyOtpKeyboardInset, 280);
+          queueOtpKeyboardInset();
         });
 
         otpRaw.addEventListener("blur", function () {
+          clearOtpInsetDebounce();
+          lastOtpBottomPx = null;
           otpSheet.style.bottom = "";
         });
 
@@ -524,6 +551,8 @@
 
           mobile.blur();
 
+          clearOtpInsetDebounce();
+          lastOtpBottomPx = null;
           otpSheet.style.bottom = "";
           otpSheet.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
           otpSheet.classList.add("translate-y-0", "opacity-100", "pointer-events-auto");
@@ -534,11 +563,13 @@
           otpRaw.focus({ preventScroll: true });
           requestAnimationFrame(function () {
             otpRaw.focus({ preventScroll: true });
-            applyOtpKeyboardInset();
+            queueOtpKeyboardInset();
           });
         }
 
         function closeOtp() {
+          clearOtpInsetDebounce();
+          lastOtpBottomPx = null;
           otpRaw.blur();
           otpSheet.style.bottom = "";
           otpSheet.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
