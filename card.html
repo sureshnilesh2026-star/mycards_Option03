@@ -11,15 +11,16 @@
       html {
         height: 100%;
         overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: hidden;
       }
       html,
       body {
         margin: 0;
         min-height: 100%;
-        height: auto;
+        height: 100%;
+        max-height: 100dvh;
         overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: hidden;
         scrollbar-width: none;
         -ms-overflow-style: none;
       }
@@ -29,7 +30,7 @@
       }
       body {
         display: flex;
-        align-items: flex-start;
+        align-items: stretch;
         justify-content: flex-start;
         min-height: 100vh;
         min-height: 100dvh;
@@ -37,24 +38,27 @@
         box-sizing: border-box;
         background: #ffffff;
       }
-      /* Mobile shell: full width; viewport height — frame scrolls inside so bottom bar stays visible */
+      /* Mobile shell: viewport height; only .frame-root__scrollable scrolls so header + bottom bar stay put */
       .mobile-page {
         position: relative;
         width: 100%;
         max-width: none;
-        min-height: 100vh;
-        min-height: 100dvh;
-        height: auto;
-        max-height: none;
+        flex: 1 1 auto;
+        min-height: 0;
+        height: 100dvh;
+        max-height: 100dvh;
         display: flex;
         flex-direction: column;
-        flex-shrink: 0;
-        overflow: visible;
+        overflow: hidden;
       }
       @supports not (height: 100dvh) {
+        html,
+        body {
+          max-height: 100vh;
+        }
         .mobile-page {
-          height: auto;
-          max-height: none;
+          height: 100vh;
+          max-height: 100vh;
         }
       }
       .mobile-page__bg {
@@ -81,7 +85,8 @@
         z-index: 1;
         pointer-events: none;
         opacity: 0;
-        transition: opacity 0.56s cubic-bezier(0.2, 0.85, 0.2, 1);
+        /* Page load: fade blue gradient 0% → 100% */
+        transition: opacity 0.72s cubic-bezier(0.2, 0.85, 0.2, 1);
       }
       .mobile-page--gradient-in .mobile-page__gradient {
         opacity: 1;
@@ -108,7 +113,7 @@
         width: 100%;
         flex: 1 1 auto;
         min-height: 0;
-        height: auto;
+        height: 100%;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -1703,7 +1708,7 @@
         outline-offset: -2px;
       }
 
-      /* ─── Page-load intro sequence (slightly slower); first bank card never animates ─── */
+      /* ─── Page-load intro: phases overlap (next starts ~45% through prior 560ms motion); first bank card never animates ─── */
       .frame-root.cd-intro .frame-root__creditcard-below,
       .frame-root.cd-intro .frame-root__card-settings,
       .frame-root.cd-intro .content {
@@ -1812,7 +1817,7 @@
         }
       }
 
-      /* Step 1: gradient + bg, MyCards logo, bottom bar slides up (product tabs — step 2 after logo) */
+      /* Step 1: MyCards logo + bottom bar (gradient fade is separate on .mobile-page) */
       .frame-root.cd-intro.cd-intro--logo .frame-root__mycards-svg {
         max-height: 55px;
         opacity: 1;
@@ -1831,7 +1836,7 @@
         pointer-events: auto;
       }
 
-      /* Step 2: product tabs (top menu) — starts after logo motion finishes */
+      /* Step 2: product tabs (top menu) — JS starts mid–logo for overlapping motion */
       .frame-root.cd-intro.cd-intro--tabs .frame-root__product-tabs {
         max-height: 120px;
         opacity: 1;
@@ -1839,7 +1844,7 @@
         transform: translate3d(0, 0, 0);
       }
 
-      /* Step 3: other carousel cards + dots */
+      /* Step 3: other carousel cards + dots (overlaps tabs) */
       .frame-root.cd-intro.cd-intro--morecards .frame-root__creditcard-row {
         gap: 12px;
       }
@@ -1853,7 +1858,7 @@
         pointer-events: auto;
       }
 
-      /* Step 4: card settings */
+      /* Step 4: card settings (overlaps carousel) */
       .frame-root.cd-intro.cd-intro--settings .frame-root__card-settings {
         opacity: 1;
         transform: translateY(0);
@@ -1862,7 +1867,7 @@
         overflow: visible;
       }
 
-      /* Step 5: white content sheet */
+      /* Step 5: white content sheet (overlaps settings) */
       .frame-root.cd-intro.cd-intro--content .content {
         opacity: 1;
         transform: translateY(0);
@@ -2850,75 +2855,83 @@
           return;
         }
 
-        var animMs = 520;
-        var gapMs = 160;
-        /* Matches .frame-root__mycards-svg / .frame-root__product-tabs transition 0.56s in intro CSS */
-        var logoMotionMs = 560;
-        var tabsMotionMs = 560;
-        var stepPauseMs = animMs + gapMs;
-        /* Carousel cards: begin partway through the tabs motion (≈50%) so they start a bit earlier */
-        var morecardsStartMs = logoMotionMs + Math.round(tabsMotionMs * 0.5);
-        /* Settings + white content: shorter gap so they start a little earlier after carousel / each other */
-        var settingsContentPauseMs = Math.round(stepPauseMs * 0.55);
+        /* Matches intro CSS transform/opacity transitions (~0.56s) on logo, tabs, cards, settings, content */
+        var introMotionMs = 560;
+        /* Next step starts this far into the previous motion (0.45 → each phase overlaps ~55%) */
+        var introOverlapFrac = 0.45;
+        var introStepOffsetMs = Math.round(introMotionMs * introOverlapFrac);
         var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
         function after(ms, fn) {
           window.setTimeout(fn, ms);
         }
 
-        function runIntroSequence(morecardsStartMs) {
-          var t = morecardsStartMs;
+        function clearIntroClasses() {
+          root.classList.remove(
+            "cd-intro",
+            "cd-intro--logo",
+            "cd-intro--tabs",
+            "cd-intro--morecards",
+            "cd-intro--settings",
+            "cd-intro--content"
+          );
+          window.dispatchEvent(new CustomEvent("card-details-intro-done"));
+        }
 
-          after(t, function () {
+        /**
+         * Cascading overlaps (timeline from script start, ~logo+bottom bar at ~0):
+         * tabs @ 1×offset, morecards @ 2×offset, settings @ 3×offset, content @ 4×offset,
+         * cleanup after last motion + buffer.
+         */
+        function runOverlappingIntroChain() {
+          var o = introStepOffsetMs;
+
+          after(o * 1, function () {
+            root.classList.add("cd-intro--tabs");
+          });
+
+          after(o * 2, function () {
             root.classList.add("cd-intro--morecards");
             window.dispatchEvent(new CustomEvent("card-details-intro-morecards"));
           });
-          t += settingsContentPauseMs;
 
-          after(t, function () {
+          after(o * 3, function () {
             root.classList.add("cd-intro--settings");
           });
-          t += settingsContentPauseMs;
 
-          after(t, function () {
+          after(o * 4, function () {
             root.classList.add("cd-intro--content");
           });
-          t += settingsContentPauseMs;
 
-          after(t + 200, function () {
-            root.classList.remove(
-              "cd-intro",
-              "cd-intro--logo",
-              "cd-intro--tabs",
-              "cd-intro--morecards",
-              "cd-intro--settings",
-              "cd-intro--content"
-            );
-            window.dispatchEvent(new CustomEvent("card-details-intro-done"));
-          });
+          after(o * 4 + introMotionMs + 200, clearIntroClasses);
         }
 
         if (reduceMotion) {
           if (shell) shell.classList.add("mobile-page--gradient-in");
-          root.classList.add("cd-intro--logo", "cd-intro--tabs");
-          runIntroSequence(stepPauseMs);
+          root.classList.add(
+            "cd-intro--logo",
+            "cd-intro--tabs",
+            "cd-intro--morecards",
+            "cd-intro--settings",
+            "cd-intro--content"
+          );
+          after(200, clearIntroClasses);
           return;
         }
 
-        /* Beat 1: gradient + background tint, header logo, bottom bar */
+        /* Beat 0: gradient opacity 0 → 100% on first paint (leads UI) */
+        requestAnimationFrame(function () {
+          if (shell) shell.classList.add("mobile-page--gradient-in");
+        });
+
+        /* Beat 1: header logo + bottom bar (next frame so gradient transition has started) */
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
-            if (shell) shell.classList.add("mobile-page--gradient-in");
             root.classList.add("cd-intro--logo");
           });
         });
 
-        /* Beat 2: product tabs — after logo transform/opacity transition ends */
-        after(logoMotionMs, function () {
-          root.classList.add("cd-intro--tabs");
-        });
-
-        runIntroSequence(morecardsStartMs);
+        runOverlappingIntroChain();
       })();
     </script>
   </body>
