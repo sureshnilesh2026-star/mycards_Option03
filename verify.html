@@ -40,6 +40,33 @@
         overflow: hidden;
         text-shadow: none;
       }
+      /* ≤1024px: hide Figma keypad; OS keyboard drives #verify-last4-native (width-only, no pointer heuristics) */
+      @media (max-width: 1024px) {
+        #card-verify-keyboard {
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      }
+      /* Hidden input for device numeric keyboard (not used on desktop fine-pointer wide layout) */
+      .verify-last4-native-input {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 1px;
+        height: 1px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        opacity: 0;
+        font-size: 16px;
+        pointer-events: none;
+      }
+      @media (min-width: 1025px) and (pointer: fine) {
+        .verify-last4-native-input {
+          display: none !important;
+        }
+      }
       /* Phone shell: full width; height tracks dynamic viewport */
       .frame-root {
         width: 100%;
@@ -592,7 +619,21 @@
         ></span>
       </div>
 
-      <!-- 4-digit keypad for last-4 verification -->
+      <!-- Native OS keyboard at viewport ≤1024px; wider viewports use #card-verify-keyboard -->
+      <input
+        type="tel"
+        id="verify-last4-native"
+        class="verify-last4-native-input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="4"
+        autocomplete="one-time-code"
+        enterkeyhint="done"
+        aria-label="Last 4 digits of card"
+        tabindex="-1"
+      />
+
+      <!-- 4-digit keypad for last-4 verification (desktop) -->
       <div
         id="card-verify-keyboard"
         class="absolute left-0 right-0 bottom-0 z-[40] w-full h-[306.26px] overflow-hidden opacity-0 pointer-events-none translate-y-0 transition-[opacity,transform] duration-300 ease-out"
@@ -696,8 +737,45 @@
         var verifySuccessToast = document.getElementById("verify-success-toast");
         var keyboard = document.getElementById("card-verify-keyboard");
         var keyboardDone = document.getElementById("keyboard-done");
+        var verifyLast4Native = document.getElementById("verify-last4-native");
         var digitsWrap = document.getElementById("card-verify-digits");
         var frameShell = document.querySelector(".frame-root");
+        /** After 4 digits at ≤1024px; avoids double dismiss without keyboard translate class */
+        var verifyDismissInProgress = false;
+
+        function useNativeVerifyKeypad() {
+          return window.matchMedia("(max-width: 1024px)").matches;
+        }
+
+        function syncNativeInputFromDigits() {
+          if (!verifyLast4Native || !useNativeVerifyKeypad()) return;
+          var v = enteredDigits.join("");
+          if (verifyLast4Native.value !== v) {
+            verifyLast4Native.value = v;
+          }
+        }
+
+        function focusVerifyNativeInput() {
+          if (!verifyLast4Native || !useNativeVerifyKeypad() || !isVerifying) return;
+          verifyLast4Native.setAttribute("tabindex", "0");
+          verifyLast4Native.value = enteredDigits.join("");
+          try {
+            verifyLast4Native.focus({ preventScroll: true });
+          } catch (e) {
+            verifyLast4Native.focus();
+          }
+          try {
+            var len = verifyLast4Native.value.length;
+            verifyLast4Native.setSelectionRange(len, len);
+          } catch (e2) {}
+        }
+
+        function blurVerifyNativeInput() {
+          if (!verifyLast4Native) return;
+          verifyLast4Native.blur();
+          verifyLast4Native.setAttribute("tabindex", "-1");
+          verifyLast4Native.value = "";
+        }
         function setFloatingDigitStripActive(on) {
           if (frameShell) frameShell.classList.toggle("verify-float-digits-active", !!on);
         }
@@ -1031,6 +1109,7 @@
           if (enteredDigits.length >= 4) return;
           enteredDigits.push(String(ch));
           renderDigits();
+          syncNativeInputFromDigits();
           if (enteredDigits.length === 4) {
             dismissKeyboardAndMoveContentDown();
           }
@@ -1040,6 +1119,7 @@
           if (enteredDigits.length === 0) return;
           enteredDigits.pop();
           renderDigits();
+          syncNativeInputFromDigits();
         }
 
         /** Stack Y targets (px) for seated wallet; uses a non-active card’s current top when possible */
@@ -1314,6 +1394,8 @@
         function resetCardVerifyUI(opts) {
           opts = opts || {};
           var deferStackHint = opts.deferStackHint === true;
+          verifyDismissInProgress = false;
+          blurVerifyNativeInput();
           isVerifying = false;
           enteredDigits = [];
           renderDigits();
@@ -1506,6 +1588,7 @@
 
         function startCardVerifyForCard(cardEl) {
           if (!cardEl || isVerifying) return;
+          verifyDismissInProgress = false;
           isVerifying = true;
           activeCard = cardEl;
 
@@ -1555,13 +1638,21 @@
           }
           animateVerifyEntryCopy();
 
-          // Show keypad.
-          if (keyboard) {
-            keyboard.classList.remove("opacity-0");
-            keyboard.classList.add("opacity-100");
-            keyboard.classList.remove("pointer-events-none");
-            keyboard.classList.add("pointer-events-auto");
-            keyboard.setAttribute("aria-hidden", "false");
+          if (useNativeVerifyKeypad()) {
+            if (keyboard) {
+              keyboard.classList.add("opacity-0", "pointer-events-none", "translate-y-0");
+              keyboard.classList.remove("opacity-100", "pointer-events-auto", "translate-y-[320px]");
+              keyboard.setAttribute("aria-hidden", "true");
+            }
+          } else {
+            if (keyboard) {
+              keyboard.classList.remove("opacity-0");
+              keyboard.classList.add("opacity-100");
+              keyboard.classList.remove("pointer-events-none");
+              keyboard.classList.add("pointer-events-auto");
+              keyboard.setAttribute("aria-hidden", "false");
+            }
+            blurVerifyNativeInput();
           }
 
           if (digitsWrap) {
@@ -1578,19 +1669,31 @@
 
           enteredDigits = [];
           renderDigits();
+
+          if (useNativeVerifyKeypad()) {
+            requestAnimationFrame(function () {
+              requestAnimationFrame(focusVerifyNativeInput);
+            });
+          }
         }
 
         function dismissKeyboardAndMoveContentDown() {
           if (!isVerifying) return;
-          if (keyboard && keyboard.classList.contains("translate-y-[320px]")) return;
-
-          if (keyboard) {
-            keyboard.classList.add("translate-y-[320px]");
-            keyboard.classList.remove("translate-y-0");
-            keyboard.classList.add("opacity-0");
-            keyboard.classList.remove("opacity-100");
-            keyboard.classList.add("pointer-events-none");
-            keyboard.classList.remove("pointer-events-auto");
+          if (useNativeVerifyKeypad()) {
+            if (verifyDismissInProgress) return;
+            verifyDismissInProgress = true;
+            blurVerifyNativeInput();
+          } else {
+            if (keyboard && keyboard.classList.contains("translate-y-[320px]")) return;
+            verifyDismissInProgress = true;
+            if (keyboard) {
+              keyboard.classList.add("translate-y-[320px]");
+              keyboard.classList.remove("translate-y-0");
+              keyboard.classList.add("opacity-0");
+              keyboard.classList.remove("opacity-100");
+              keyboard.classList.add("pointer-events-none");
+              keyboard.classList.remove("pointer-events-auto");
+            }
           }
 
           // Move content down to final state, matching reference layout.
@@ -1647,6 +1750,8 @@
           }
 
           isVerifying = false;
+          verifyDismissInProgress = false;
+          blurVerifyNativeInput();
           activeCard = null;
           lastVerifiedStackIndex = activeIdx;
           postVerifyFinalStack = false;
@@ -1857,7 +1962,7 @@
         var keypadButtons = document.getElementById("keypad-buttons");
         if (keypadButtons) {
           keypadButtons.addEventListener("click", function (e) {
-            if (!isVerifying) return;
+            if (!isVerifying || useNativeVerifyKeypad()) return;
             var target = e.target;
             if (!target || !target.closest) return;
             if (target.closest("#keypad-back-space")) {
@@ -1874,12 +1979,36 @@
         }
 
         document.addEventListener("keydown", function (e) {
-          if (!isVerifying || !keyboard) return;
-          if (keyboard.classList.contains("opacity-0")) return;
-          if (e.key !== "Backspace" && e.key !== "Delete") return;
-          e.preventDefault();
-          keypadRemoveLastDigit();
+          if (!isVerifying) return;
+          if (useNativeVerifyKeypad()) {
+            return;
+          }
+          if (!keyboard || keyboard.classList.contains("opacity-0")) return;
+          if (e.key === "Backspace" || e.key === "Delete") {
+            e.preventDefault();
+            keypadRemoveLastDigit();
+            return;
+          }
+          if (/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+            appendDigit(e.key);
+          }
         });
+
+        if (verifyLast4Native) {
+          verifyLast4Native.addEventListener("input", function () {
+            if (!isVerifying || !useNativeVerifyKeypad()) return;
+            var v = this.value.replace(/\D/g, "").slice(0, 4);
+            if (this.value !== v) {
+              this.value = v;
+            }
+            enteredDigits = v.split("");
+            renderDigits();
+            if (v.length === 4) {
+              dismissKeyboardAndMoveContentDown();
+            }
+          });
+        }
 
         if (chooseAnotherCard) {
           chooseAnotherCard.addEventListener("click", function () {
