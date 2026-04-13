@@ -1730,7 +1730,11 @@
           enteredDigits = [];
           renderDigits();
 
-          /* Autofocus timing: wait for card `top`/`transform` transition to finish, then focus twice on rAF for reliable mobile IME (no tap on chip). */
+          /* Open IME in the same click gesture so keyboard appears while card slides up. */
+          focusLastFourField();
+          requestAnimationFrame(focusLastFourField);
+
+          /* Keep post-animation refocus as a safety net for browsers that may drop focus during transform. */
           scheduleFocusWhenVerifyCardSettled(cardEl, function () {
             focusLastFourField();
             requestAnimationFrame(function () {
