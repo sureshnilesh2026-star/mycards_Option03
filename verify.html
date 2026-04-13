@@ -110,17 +110,26 @@
       .card-layer.card-verifying-last4 .card-oncard-digits__dot-groups {
         pointer-events: none;
       }
-      /* Phone shell: full width; height tracks dynamic viewport */
+      /* Phone shell: full width; height tracks dynamic viewport. Lifts whole screen above soft keyboard while verifying last-4. */
       .frame-root {
+        --keyboard-lift: 0px;
         width: 100%;
         max-width: none;
         height: 100dvh;
         overflow: hidden;
+        transform: translateY(calc(-1 * var(--keyboard-lift, 0px)));
+        transition: transform 0.32s ease-in-out;
+        will-change: transform;
       }
       @supports not (height: 100dvh) {
         .frame-root {
           height: 100vh;
           min-height: 100vh;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .frame-root {
+          transition: none;
         }
       }
       /* Top chrome: slides in from above (translateY only — no scale) */
@@ -768,6 +777,13 @@
         var VERIFY_SUCCESS_MS = 2000;
         var VERIFY_SUCCESS_SHEET_MS = 320;
         var isVerifySuccessShowing = false;
+        /* Verification starts only on explicit card click from stack (no auto-open on load). */
+        var VERIFY_AUTO_START_LAST4_ON_LOAD = false;
+
+        /** visualViewport-driven lift: keeps the mounted last-4 chip above the soft keyboard while verifying. */
+        var verifyKeyboardLiftTimer = null;
+        var verifyKeyboardLiftRaf = null;
+        var lastVerifyLiftApplied = -1;
 
         function getWalletTopInFrame() {
           if (!frameShell || !el) return 0;
@@ -1059,6 +1075,43 @@
           el.classList.add("wallet-exit");
         }
 
+        function applyVerifyKeyboardLift() {
+          if (!frameShell) return;
+          if (verifyKeyboardLiftRaf) cancelAnimationFrame(verifyKeyboardLiftRaf);
+          verifyKeyboardLiftRaf = requestAnimationFrame(function () {
+            verifyKeyboardLiftRaf = null;
+            if (!isVerifying || !lastFourInput || !lastFourInput.classList.contains("last-four-input--on-card")) {
+              lastVerifyLiftApplied = -1;
+              frameShell.style.setProperty("--keyboard-lift", "0px");
+              return;
+            }
+            var vv = window.visualViewport;
+            if (!vv) return;
+            var visibleBottom = vv.offsetTop + vv.height;
+            var margin = 14;
+            var chipBottom = lastFourInput.getBoundingClientRect().bottom;
+            var lift = Math.max(0, Math.round(chipBottom - visibleBottom + margin));
+            var cap = Math.round(window.innerHeight * 0.9);
+            if (lift > cap) lift = cap;
+            if (lift === lastVerifyLiftApplied) return;
+            lastVerifyLiftApplied = lift;
+            frameShell.style.setProperty("--keyboard-lift", lift + "px");
+          });
+        }
+
+        function scheduleVerifyKeyboardLift() {
+          window.clearTimeout(verifyKeyboardLiftTimer);
+          verifyKeyboardLiftTimer = window.setTimeout(function () {
+            verifyKeyboardLiftTimer = null;
+            applyVerifyKeyboardLift();
+          }, 48);
+        }
+
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", scheduleVerifyKeyboardLift);
+          window.visualViewport.addEventListener("scroll", scheduleVerifyKeyboardLift);
+        }
+
         function renderDigits() {
           var text = enteredDigits.join("");
           if (lastFourInput) {
@@ -1091,6 +1144,33 @@
           if (typeof lastFourInput.setSelectionRange === "function") {
             lastFourInput.setSelectionRange(len, len);
           }
+          scheduleVerifyKeyboardLift();
+        }
+
+        /** Defer focus() until the active card’s 600ms move transition ends so the IME does not open mid-animation (avoids focus loss / flicker). */
+        function scheduleFocusWhenVerifyCardSettled(cardEl, onReady) {
+          if (!cardEl || typeof onReady !== "function") return;
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            requestAnimationFrame(function () {
+              requestAnimationFrame(onReady);
+            });
+            return;
+          }
+          var finished = false;
+          function done() {
+            if (finished) return;
+            finished = true;
+            cardEl.removeEventListener("transitionend", onTe);
+            window.clearTimeout(fallbackId);
+            onReady();
+          }
+          function onTe(ev) {
+            if (ev.target !== cardEl) return;
+            if (ev.propertyName !== "top" && ev.propertyName !== "transform") return;
+            done();
+          }
+          cardEl.addEventListener("transitionend", onTe);
+          var fallbackId = window.setTimeout(done, 700);
         }
 
         function blurLastFourField() {
@@ -1107,12 +1187,17 @@
             if (enteredDigits.length === 4) {
               dismissKeyboardAndMoveContentDown();
             }
+            scheduleVerifyKeyboardLift();
           });
           lastFourInput.addEventListener("blur", function () {
             if (!isVerifying) return;
             if (enteredDigits.length < 4 && el) {
               el.classList.remove("wallet-exit");
             }
+            scheduleVerifyKeyboardLift();
+          });
+          lastFourInput.addEventListener("focus", function () {
+            scheduleVerifyKeyboardLift();
           });
         }
 
@@ -1175,6 +1260,8 @@
           blurLastFourField();
           parkLastFourInput();
           removeCardVerifyingLast4FromAll();
+          lastVerifyLiftApplied = -1;
+          if (frameShell) frameShell.style.setProperty("--keyboard-lift", "0px");
 
           if (verifyCardCta) {
             verifyCardCta.classList.add("opacity-0", "pointer-events-none");
@@ -1402,6 +1489,8 @@
           blurLastFourField();
           parkLastFourInput();
           removeCardVerifyingLast4FromAll();
+          lastVerifyLiftApplied = -1;
+          if (frameShell) frameShell.style.setProperty("--keyboard-lift", "0px");
 
           if (chooseAnotherCard) {
             chooseAnotherCard.classList.remove("choose-another--above-stack");
@@ -1574,6 +1663,8 @@
           if (!cardEl || isVerifying) return;
           isVerifying = true;
           activeCard = cardEl;
+          /* Move wallet down in the same phase as selected-card rise. */
+          if (el) el.classList.add("wallet-exit");
           removeCardVerifyingLast4FromAll();
           cardEl.classList.add("card-verifying-last4");
           mountLastFourInputOnActiveCard();
@@ -1639,11 +1730,14 @@
           enteredDigits = [];
           renderDigits();
 
-          /* Focus after card slide (~600ms) so layout + native IME settle together */
-          window.setTimeout(function () {
+          /* Autofocus timing: wait for card `top`/`transform` transition to finish, then focus twice on rAF for reliable mobile IME (no tap on chip). */
+          scheduleFocusWhenVerifyCardSettled(cardEl, function () {
             focusLastFourField();
-            requestAnimationFrame(focusLastFourField);
-          }, 420);
+            requestAnimationFrame(function () {
+              focusLastFourField();
+              scheduleVerifyKeyboardLift();
+            });
+          });
         }
 
         function dismissKeyboardAndMoveContentDown() {
@@ -1693,6 +1787,7 @@
           if (el) {
             el.classList.add("wallet-exit");
           }
+          scheduleVerifyKeyboardLift();
         }
 
         function returnToStackAfterVerify() {
@@ -1710,6 +1805,8 @@
           blurLastFourField();
           parkLastFourInput();
           removeCardVerifyingLast4FromAll();
+          lastVerifyLiftApplied = -1;
+          if (frameShell) frameShell.style.setProperty("--keyboard-lift", "0px");
 
           isVerifying = false;
           activeCard = null;
@@ -2011,14 +2108,22 @@
               }, idx * CARD_STAGGER_MS);
             })(i);
           }
-          // Start hint a little before the last card fully settles.
           var hintDelayMs = Math.max(
             0,
             (lastCardIndex >= 0 ? lastCardIndex * CARD_STAGGER_MS : 0) + CARD_IN_ANIM_MS - 120
           );
           resetCardVerifyUI({ deferStackHint: true });
-          if (cardSelectText) {
-            setTimeout(function () {
+          /* Auto last-4: after the last stacked card’s intro motion (~CARD_IN_ANIM_MS), enter verify on the top card and focus the chip — no tap (keyboard opens without user hitting the field). */
+          if (VERIFY_AUTO_START_LAST4_ON_LOAD) {
+            var settleMs =
+              (lastCardIndex >= 0 ? lastCardIndex * CARD_STAGGER_MS : 0) + CARD_IN_ANIM_MS + 60;
+            window.setTimeout(function () {
+              if (postVerifyFinalStack) return;
+              var topCard = cards[0];
+              if (topCard && !isVerifying) startCardVerifyForCard(topCard);
+            }, settleMs);
+          } else if (cardSelectText) {
+            window.setTimeout(function () {
               animateCardSelectHintReveal();
             }, hintDelayMs);
           }
@@ -2036,6 +2141,7 @@
             applyCardStackTops();
             if (isVerifying && activeCard) {
               syncDigitsWrapToActiveCard();
+              scheduleVerifyKeyboardLift();
             }
             if (postVerifyFinalStack) {
               syncAddAnotherAboveStack();
