@@ -173,36 +173,239 @@
         width: 0;
         height: 0;
       }
+      /* Hero: MyCards lockup fixed; illustrations + headline rotate (3s) */
+      .hero-stack {
+        --hero-brand-h: 48px;
+        box-sizing: border-box;
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .hero-brand-lockup {
+        position: relative;
+        z-index: 30;
+        flex: 0 0 auto;
+        height: var(--hero-brand-h);
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+      }
+      .hero-brand-lockup img {
+        display: block;
+        width: 126px;
+        height: 48px;
+        max-width: 126px;
+        max-height: 48px;
+        flex-shrink: 0;
+        object-fit: contain;
+        object-position: center center;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      .hero-carousel {
+        box-sizing: border-box;
+        position: relative;
+        z-index: 10;
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .hero-carousel__viewport {
+        position: relative;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        overflow: hidden;
+      }
+      .hero-carousel__track {
+        display: flex;
+        width: 300%;
+        height: 100%;
+        transition: transform 0.48s ease-out;
+        will-change: transform;
+      }
+      .hero-carousel__slide {
+        flex: 0 0 33.333333%;
+        position: relative;
+        height: 100%;
+        min-height: 0;
+      }
+      .hero-carousel__slide img {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        object-position: center top;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      .hero-carousel__dots {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(clamp(56px, 24%, 120px) - 8px);
+        z-index: 20;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        pointer-events: auto;
+      }
+      .hero-carousel__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        padding: 0;
+        border: none;
+        background: rgba(255, 255, 255, 0.38);
+        cursor: pointer;
+        transition: width 0.2s ease, background 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .hero-carousel__dot:focus {
+        outline: none;
+      }
+      .hero-carousel__dot:focus-visible {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+      }
+      .hero-carousel__dot--active {
+        width: 18px;
+        background: rgba(255, 255, 255, 0.92);
+      }
       @media (prefers-reduced-motion: reduce) {
+        .hero-carousel__track {
+          transition: none !important;
+        }
         .frame-root {
           transition: none;
           will-change: auto;
         }
       }
+      /* Layer debug: open page with ?layers=1 */
+      #layer-debug {
+        position: fixed;
+        top: 8px;
+        right: 8px;
+        z-index: 9999;
+        width: min(100vw - 16px, 280px);
+        max-height: min(70vh, 420px);
+        overflow: auto;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.92);
+        color: #e2e8f0;
+        font-size: 11px;
+        line-height: 1.35;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+      }
+      #layer-debug h2 {
+        margin: 0 0 8px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #94a3b8;
+      }
+      #layer-debug table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      #layer-debug th,
+      #layer-debug td {
+        text-align: left;
+        padding: 4px 6px 4px 0;
+        vertical-align: top;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+      }
+      #layer-debug th {
+        color: #cbd5e1;
+        font-weight: 600;
+        width: 38%;
+      }
+      #layer-debug code {
+        font-size: 10px;
+        color: #a5b4fc;
+        word-break: break-all;
+      }
+      #layer-debug button {
+        margin-top: 8px;
+        width: 100%;
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(30, 41, 59, 0.9);
+        color: #f1f5f9;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      #layer-debug button[aria-pressed="true"] {
+        background: #334155;
+        border-color: #94a3b8;
+      }
+      html.layers-debug-outlines [data-layer] {
+        outline: 2px dashed var(--layer-color, #f472b6);
+        outline-offset: -2px;
+      }
+      [data-layer="header"] {
+        --layer-color: #38bdf8;
+      }
+      [data-layer="hero"] {
+        --layer-color: #a78bfa;
+      }
+      [data-layer="login"] {
+        --layer-color: #34d399;
+      }
+      [data-layer="otp-backdrop"] {
+        --layer-color: #fbbf24;
+      }
+      [data-layer="otp-sheet"] {
+        --layer-color: #fb7185;
+      }
+      [data-layer="toast"] {
+        --layer-color: #e2e8f0;
+      }
     </style>
   </head>
   <body class="min-h-[100dvh] min-h-screen p-0 box-border w-full max-w-none">
     <!--
-      PAGE LAYERS (bottom → top, per region)
+      PAGE LAYERS (stack inside .frame-root, then globals)
 
-      [Viewport — body]
-        L0  Page chrome white on body (outside phone frame)
+      [Body — outside frame]
+        • White page chrome
 
-      [Mobile frame — .frame-root, full width, min-height viewport, grows with content, gradient column]
-        L0  Top bar (Figma SVG assets/menu-header.svg + #btn-eva / #btn-menu overlays)
-        L1  Hero block (flex-1 min-h-0, fill)
-              L0  Marketing art: assets/etb-hero-marketing.svg (z-10, absolute)
-        L2  Bottom sheet (fixed h-sheet 320px, flex-none, aligned to frame bottom)
-              • Title, input, helper, #input-hint
-              • #btn-otp + spinner
-              • Footer copy + nav links
+      [.frame-root — gradient phone column]
+        1. Header        data-layer="header"   z-30  (menu-header.svg + #btn-eva / #btn-menu)
+        2. Hero          data-layer="hero"     .hero-stack: fixed .hero-brand-lockup + #hero-carousel + dots
+        3. Login sheet   data-layer="login"    #login-sheet  z-20  (slides away when OTP opens)
+        4. OTP backdrop  data-layer="otp-backdrop"  #otp-backdrop  z-[45]
+        5. OTP sheet     data-layer="otp-sheet"     #otp-sheet     z-[50]  role="dialog"
 
-      [Global overlay]
-        L99 Toast #toast (fixed, z-50; hidden via opacity until script shows it)
+      [Fixed on viewport]
+        • Toast #toast   data-layer="toast"   z-50  (opacity 0 until shown; same z as OTP sheet — DOM order breaks ties)
+
+      Dev: append ?layers=1 to this URL for a live stack table + optional outlines.
     -->
     <div class="frame-root relative w-full rounded-none sm:shadow-2xl">
       <!-- Top menu bar: exact Figma export (360×48), see assets/menu-header.svg -->
-      <header class="relative z-30 h-header w-full shrink-0 overflow-hidden">
+      <header class="relative z-30 h-header w-full shrink-0 overflow-hidden" data-layer="header">
         <img
           src="assets/menu-header.svg"
           width="360"
@@ -225,21 +428,91 @@
         ></button>
       </header>
 
-      <!-- Hero: marketing art only (SVG has no baked-in “Let’s Get Started” sheet; PNG export often does) -->
-      <div class="relative w-full min-h-0 flex-1 overflow-hidden">
-        <img
-          src="assets/etb-hero-marketing.svg"
-          width="360"
-          height="334"
-          alt=""
-          class="absolute left-1/2 top-0 z-10 h-full w-full max-w-full -translate-x-1/2 select-none pointer-events-none object-contain object-top"
-          draggable="false"
-        />
+      <!-- Hero: MyCards lockup fixed; three illustration cards rotate (auto 3s) -->
+      <div class="relative w-full min-h-0 flex-1 overflow-hidden" data-layer="hero">
+        <div class="hero-stack">
+          <div class="hero-brand-lockup" aria-hidden="true">
+            <img
+              src="assets/etb-hero-marketing.svg"
+              width="126"
+              height="48"
+              alt=""
+              draggable="false"
+            />
+          </div>
+          <div
+            id="hero-carousel"
+            class="hero-carousel"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Highlights"
+          >
+            <div class="hero-carousel__viewport">
+              <div class="hero-carousel__track" id="hero-carousel-track">
+                <div
+                  class="hero-carousel__slide"
+                  data-hero-slide="0"
+                  aria-hidden="false"
+                >
+                  <img
+                    src="assets/hero-carousel-card-01.svg"
+                    width="328"
+                    height="234"
+                    alt=""
+                    draggable="false"
+                  />
+                </div>
+                <div class="hero-carousel__slide" data-hero-slide="1" aria-hidden="true">
+                  <img
+                    src="assets/hero-carousel-card-02.svg"
+                    width="328"
+                    height="234"
+                    alt=""
+                    draggable="false"
+                  />
+                </div>
+                <div class="hero-carousel__slide" data-hero-slide="2" aria-hidden="true">
+                  <img
+                    src="assets/hero-carousel-card-03.svg"
+                    width="328"
+                    height="234"
+                    alt=""
+                    draggable="false"
+                  />
+                </div>
+              </div>
+              <div class="hero-carousel__dots" role="tablist" aria-label="Card">
+                <button
+                  type="button"
+                  class="hero-carousel__dot hero-carousel__dot--active"
+                  role="tab"
+                  aria-selected="true"
+                  aria-label="Card 1 of 3"
+                ></button>
+                <button
+                  type="button"
+                  class="hero-carousel__dot"
+                  role="tab"
+                  aria-selected="false"
+                  aria-label="Card 2 of 3"
+                ></button>
+                <button
+                  type="button"
+                  class="hero-carousel__dot"
+                  role="tab"
+                  aria-selected="false"
+                  aria-label="Card 3 of 3"
+                ></button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Bottom sheet: interactive layer (matches Figma spacing; graphics above are unchanged) -->
       <div
         id="login-sheet"
+        data-layer="login"
         class="flex flex-col flex-none h-sheet min-h-0 shrink-0 bg-white rounded-t-[24px] shadow-sheet relative z-20 overflow-hidden px-6 pt-0 pb-0 transition-transform transition-opacity duration-[440ms] ease-out translate-y-0 opacity-100"
       >
         <!-- Login Details top border (4px gradient) -->
@@ -309,11 +582,13 @@
       <!-- OTP layer: bottom sheet — flush to frame bottom (height matches login sheet token) -->
       <div
         id="otp-backdrop"
+        data-layer="otp-backdrop"
         class="absolute inset-0 bg-black/25 opacity-0 pointer-events-none transition-opacity duration-[440ms] ease-out z-[45]"
         aria-hidden="true"
       ></div>
       <div
         id="otp-sheet"
+        data-layer="otp-sheet"
         class="absolute left-0 right-0 bottom-0 h-sheet w-full max-w-full bg-[#fdfeff] rounded-t-[26px] overflow-hidden translate-y-full opacity-0 pointer-events-none transition-transform transition-opacity duration-[440ms] ease-out z-[50]"
         role="dialog"
         aria-modal="true"
@@ -395,11 +670,150 @@
 
     <div
       id="toast"
+      data-layer="toast"
       class="fixed bottom-6 left-1/2 -translate-x-1/2 max-w-[90vw] px-4 py-2.5 rounded-lg bg-neutral-900 text-white text-sm shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50"
       role="status"
     ></div>
 
+    <div id="layer-debug" hidden></div>
+
     <script>
+      (function initLayerDebug() {
+        try {
+          var q = new URLSearchParams(window.location.search);
+          if (q.get("layers") !== "1" && q.get("layers") !== "true") return;
+        } catch (e) {
+          return;
+        }
+        var panel = document.getElementById("layer-debug");
+        if (!panel) return;
+        panel.hidden = false;
+
+        var rows = [
+          { label: "Header", el: document.querySelector('[data-layer="header"]'), note: "z-30" },
+          { label: "Hero", el: document.querySelector('[data-layer="hero"]'), note: "art z-10 inside" },
+          { label: "Login", el: document.getElementById("login-sheet"), note: "z-20" },
+          { label: "OTP dim", el: document.getElementById("otp-backdrop"), note: "z-45" },
+          { label: "OTP sheet", el: document.getElementById("otp-sheet"), note: "z-50" },
+          { label: "Toast", el: document.getElementById("toast"), note: "z-50 fixed" },
+        ];
+
+        function zOf(el) {
+          if (!el) return "—";
+          var z = window.getComputedStyle(el).zIndex;
+          return z === "auto" ? "auto" : z;
+        }
+
+        function otpOpen() {
+          var s = document.getElementById("otp-sheet");
+          return s && s.classList.contains("translate-y-0");
+        }
+
+        function render() {
+          var tb = [];
+          tb.push("<h2>Layers (?layers=1)</h2>");
+          tb.push("<table><thead><tr><th>Layer</th><th>z-index</th></tr></thead><tbody>");
+          for (var i = 0; i < rows.length; i++) {
+            var r = rows[i];
+            tb.push(
+              "<tr><th>" +
+                r.label +
+                "</th><td><code>" +
+                zOf(r.el) +
+                "</code><br><span style='color:#64748b'>" +
+                r.note +
+                "</span></td></tr>"
+            );
+          }
+          tb.push("</tbody></table>");
+          tb.push(
+            "<p style='margin:8px 0 0;color:#94a3b8'>OTP open: <strong style='color:#e2e8f0'>" +
+              (otpOpen() ? "yes" : "no") +
+              "</strong></p>"
+          );
+          panel.innerHTML = tb.join("");
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = "Outline layers";
+          btn.setAttribute("aria-pressed", document.documentElement.classList.contains("layers-debug-outlines") ? "true" : "false");
+          btn.addEventListener("click", function () {
+            var on = document.documentElement.classList.toggle("layers-debug-outlines");
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
+          });
+          panel.appendChild(btn);
+        }
+
+        render();
+        var mo = new MutationObserver(render);
+        var otpSheet = document.getElementById("otp-sheet");
+        if (otpSheet) mo.observe(otpSheet, { attributes: true, attributeFilter: ["class"] });
+      })();
+
+      (function initHeroCarousel() {
+        var root = document.getElementById("hero-carousel");
+        var track = document.getElementById("hero-carousel-track");
+        if (!root || !track) return;
+        var slides = root.querySelectorAll(".hero-carousel__slide");
+        var dots = root.querySelectorAll(".hero-carousel__dot");
+        var n = slides.length;
+        if (!n || !dots.length) return;
+
+        var i = 0;
+        var timer = null;
+        var ms = 3000;
+        var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function applySlide() {
+          track.style.transform = "translateX(-" + (i * 100) / n + "%)";
+          for (var d = 0; d < dots.length; d++) {
+            var on = d === i;
+            dots[d].setAttribute("aria-selected", on ? "true" : "false");
+            dots[d].classList.toggle("hero-carousel__dot--active", on);
+          }
+          for (var s = 0; s < slides.length; s++) {
+            slides[s].setAttribute("aria-hidden", s === i ? "false" : "true");
+          }
+        }
+
+        function next() {
+          i = (i + 1) % n;
+          applySlide();
+        }
+
+        function go(ix) {
+          i = ((ix % n) + n) % n;
+          applySlide();
+          restartTimer();
+        }
+
+        function restartTimer() {
+          clearInterval(timer);
+          timer = null;
+          if (reducedMotion) return;
+          timer = window.setInterval(next, ms);
+        }
+
+        applySlide();
+        restartTimer();
+
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) {
+            clearInterval(timer);
+            timer = null;
+          } else {
+            restartTimer();
+          }
+        });
+
+        for (var d = 0; d < dots.length; d++) {
+          (function (idx) {
+            dots[idx].addEventListener("click", function () {
+              go(idx);
+            });
+          })(d);
+        }
+      })();
+
       (function () {
         var infoText = document.getElementById("info-text");
         var loginSheet = document.getElementById("login-sheet");
