@@ -35,8 +35,23 @@
       body::-webkit-scrollbar {
         display: none;
       }
-      /* Native last-4 field: screen-reader + focus target; digits show on card artwork */
-      #last-four-input {
+      /* Parked last-4 field (off-screen); during verify the input is moved onto the active card chip */
+      #last-four-input-park {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      #last-four-input-park #last-four-input {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -48,11 +63,52 @@
         border: 0;
         opacity: 0;
       }
+      #last-four-input.last-four-input--on-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 4px 6px;
+        overflow: visible;
+        clip: auto;
+        white-space: nowrap;
+        opacity: 1;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        color: #fff;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        caret-color: #fff;
+        z-index: 2;
+        pointer-events: auto;
+      }
       #last-four-input:focus {
         outline: none;
       }
       #last-four-input:focus-visible {
         outline: none;
+      }
+      .card-oncard-digits__last4--live-input .card-oncard-digits__text {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+      }
+      .card-layer.card-verifying-last4 .card-oncard-digits {
+        pointer-events: auto;
+      }
+      .card-layer.card-verifying-last4 .card-oncard-digits__dot-groups {
+        pointer-events: none;
       }
       /* Phone shell: full width; height tracks dynamic viewport */
       .frame-root {
@@ -155,6 +211,7 @@
         background: rgba(255, 255, 255, 0.95);
       }
       .card-oncard-digits__last4 {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -257,7 +314,7 @@
         transform: translateX(-50%) translateY(-50%) translateY(var(--wallet-delta, 0px)) rotate(0deg)
           scale(0.9);
       }
-      /* Slide wallet out of the frame bottom when the Verify CTA is shown */
+      /* Slide wallet down when the numeric keyboard opens (last-4 focus) and when the Verify CTA is shown */
       #wallet-final.wallet-exit {
         transform: translateX(-50%) translateY(-50%)
           translateY(calc(var(--wallet-delta, 0px) + 520px)) rotate(0deg) scale(0.9);
@@ -606,17 +663,19 @@
         ></span>
       </div>
 
-      <!-- Native keyboard: clipped input; digits mirror to #digit-display + .card-oncard-digits__text -->
-      <input
-        type="tel"
-        id="last-four-input"
-        inputmode="numeric"
-        autocomplete="one-time-code"
-        pattern="[0-9]*"
-        maxlength="4"
-        enterkeyhint="done"
-        aria-label="Last 4 digits of card"
-      />
+      <!-- Native keyboard: input is parked off-screen, then moved onto the active card chip while verifying -->
+      <div id="last-four-input-park" aria-hidden="true">
+        <input
+          type="tel"
+          id="last-four-input"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          pattern="[0-9]*"
+          maxlength="4"
+          enterkeyhint="done"
+          aria-label="Last 4 digits of card"
+        />
+      </div>
 
       <img
         src="assets/wallet-final.png"
@@ -656,6 +715,7 @@
         var verifyCardCta = document.getElementById("verify-card-cta");
         var verifySuccessToast = document.getElementById("verify-success-toast");
         var lastFourInput = document.getElementById("last-four-input");
+        var lastFourInputPark = document.getElementById("last-four-input-park");
         var digitsWrap = document.getElementById("card-verify-digits");
         var frameShell = document.querySelector(".frame-root");
         function setFloatingDigitStripActive(on) {
@@ -965,6 +1025,40 @@
           digitsWrap.style.top = t + DIGITS_TOP_OFFSET + "px";
         }
 
+        function removeCardVerifyingLast4FromAll() {
+          for (var ri = 0; ri < cards.length; ri++) {
+            if (cards[ri]) cards[ri].classList.remove("card-verifying-last4");
+          }
+        }
+
+        function parkLastFourInput() {
+          if (!lastFourInput || !lastFourInputPark) return;
+          lastFourInput.classList.remove("last-four-input--on-card");
+          var liveSlots = document.querySelectorAll(".card-oncard-digits__last4--live-input");
+          for (var li = 0; li < liveSlots.length; li++) {
+            liveSlots[li].classList.remove("card-oncard-digits__last4--live-input");
+          }
+          lastFourInputPark.appendChild(lastFourInput);
+        }
+
+        function mountLastFourInputOnActiveCard() {
+          if (!lastFourInput || !activeCard) return;
+          var last4 = activeCard.querySelector(".card-oncard-digits__last4");
+          if (!last4) return;
+          var prevLive = document.querySelectorAll(".card-oncard-digits__last4--live-input");
+          for (var pi = 0; pi < prevLive.length; pi++) {
+            prevLive[pi].classList.remove("card-oncard-digits__last4--live-input");
+          }
+          last4.classList.add("card-oncard-digits__last4--live-input");
+          lastFourInput.classList.add("last-four-input--on-card");
+          last4.appendChild(lastFourInput);
+        }
+
+        function slideWalletForLastFourKeyboard() {
+          if (!el || !isVerifying) return;
+          el.classList.add("wallet-exit");
+        }
+
         function renderDigits() {
           var text = enteredDigits.join("");
           if (lastFourInput) {
@@ -987,6 +1081,7 @@
 
         function focusLastFourField() {
           if (!lastFourInput || !isVerifying) return;
+          slideWalletForLastFourKeyboard();
           try {
             lastFourInput.focus({ preventScroll: true });
           } catch (e) {
@@ -1011,6 +1106,12 @@
             renderDigits();
             if (enteredDigits.length === 4) {
               dismissKeyboardAndMoveContentDown();
+            }
+          });
+          lastFourInput.addEventListener("blur", function () {
+            if (!isVerifying) return;
+            if (enteredDigits.length < 4 && el) {
+              el.classList.remove("wallet-exit");
             }
           });
         }
@@ -1072,6 +1173,8 @@
           renderDigits();
           setFloatingDigitStripActive(false);
           blurLastFourField();
+          parkLastFourInput();
+          removeCardVerifyingLast4FromAll();
 
           if (verifyCardCta) {
             verifyCardCta.classList.add("opacity-0", "pointer-events-none");
@@ -1297,6 +1400,8 @@
           }
 
           blurLastFourField();
+          parkLastFourInput();
+          removeCardVerifyingLast4FromAll();
 
           if (chooseAnotherCard) {
             chooseAnotherCard.classList.remove("choose-another--above-stack");
@@ -1469,6 +1574,9 @@
           if (!cardEl || isVerifying) return;
           isVerifying = true;
           activeCard = cardEl;
+          removeCardVerifyingLast4FromAll();
+          cardEl.classList.add("card-verifying-last4");
+          mountLastFourInputOnActiveCard();
 
           restoreInfoLayerVerifyCopy();
 
@@ -1599,6 +1707,10 @@
             }
           }
 
+          blurLastFourField();
+          parkLastFourInput();
+          removeCardVerifyingLast4FromAll();
+
           isVerifying = false;
           activeCard = null;
           lastVerifiedStackIndex = activeIdx;
@@ -1634,7 +1746,6 @@
             stackTopsReturn = getStackTopsPx();
           }
 
-          blurLastFourField();
           if (digitsWrap) {
             digitsWrap.classList.add("pointer-events-none", "opacity-0");
             digitsWrap.classList.remove("opacity-100");

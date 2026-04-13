@@ -173,6 +173,12 @@
         width: 0;
         height: 0;
       }
+      /* OTP sheet: lift above the native keyboard (bottom adjusted from JS; transform stays for open/close slide) */
+      #otp-sheet {
+        transition-property: transform, opacity, bottom;
+        transition-duration: 440ms, 440ms, 0.22s;
+        transition-timing-function: ease-out, ease-out, ease-out;
+      }
       /* Hero: MyCards lockup fixed; illustrations + headline rotate (3s) */
       .hero-stack {
         --hero-brand-h: 48px;
@@ -589,7 +595,7 @@
       <div
         id="otp-sheet"
         data-layer="otp-sheet"
-        class="absolute left-0 right-0 bottom-0 h-sheet w-full max-w-full bg-[#fdfeff] rounded-t-[26px] overflow-hidden translate-y-full opacity-0 pointer-events-none transition-transform transition-opacity duration-[440ms] ease-out z-[50]"
+        class="absolute left-0 right-0 bottom-0 h-sheet w-full max-w-full bg-[#fdfeff] rounded-t-[26px] overflow-hidden translate-y-full opacity-0 pointer-events-none z-[50]"
         role="dialog"
         aria-modal="true"
         aria-label="Enter OTP"
@@ -875,6 +881,8 @@
         var frameRoot = document.querySelector(".frame-root");
         var isMobileInputFocused = false;
         var isOtpInputFocused = false;
+        /** True while OTP sheet is opening so a stray #mobile blur does not reset the login-frame keyboard lift. */
+        var otpSwapInProgress = false;
 
         var defaultInfoText = "You’ll receive an OTP on this number";
 
@@ -911,6 +919,25 @@
           frameRoot.style.transform = "";
         }
 
+        /** Move OTP sheet up so primary actions (e.g. Verify) sit above the native keyboard. */
+        function updateOtpSheetKeyboardLift() {
+          if (!otpSheet || !otpVerifyBtn) return;
+          if (
+            !otpSheet.classList.contains("translate-y-0") ||
+            !otpSheet.classList.contains("opacity-100")
+          ) {
+            otpSheet.style.bottom = "";
+            return;
+          }
+          var vv = window.visualViewport;
+          var visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+          var margin = 14;
+          var verifyRect = otpVerifyBtn.getBoundingClientRect();
+          var overlap = verifyRect.bottom - (visibleBottom - margin);
+          var lift = Math.max(0, Math.round(overlap));
+          otpSheet.style.bottom = lift + "px";
+        }
+
         function scheduleKeyboardShift() {
           if (isOtpInputFocused) return;
           clearTimeout(keyboardShiftDebounceTimer);
@@ -942,6 +969,11 @@
           });
         }
 
+        function onVisualViewportChange() {
+          scheduleKeyboardShift();
+          updateOtpSheetKeyboardLift();
+        }
+
         /* Reduce native scroll-into-view fighting our lift (flicker) where supported */
         mobile.addEventListener("pointerdown", function () {
           if (document.activeElement !== mobile) {
@@ -961,11 +993,12 @@
 
         mobile.addEventListener("blur", function () {
           isMobileInputFocused = false;
-          if (!isOtpInputFocused) resetKeyboardShift();
+          if (!isOtpInputFocused && !otpSwapInProgress) resetKeyboardShift();
         });
 
         otpRaw.addEventListener("focus", function () {
           isOtpInputFocused = true;
+          updateOtpSheetKeyboardLift();
         });
 
         otpRaw.addEventListener("pointerdown", function () {
@@ -981,11 +1014,12 @@
         otpRaw.addEventListener("blur", function () {
           isOtpInputFocused = false;
           if (!isMobileInputFocused) resetKeyboardShift();
+          updateOtpSheetKeyboardLift();
         });
 
         if (window.visualViewport) {
-          window.visualViewport.addEventListener("resize", scheduleKeyboardShift);
-          window.visualViewport.addEventListener("scroll", scheduleKeyboardShift);
+          window.visualViewport.addEventListener("resize", onVisualViewportChange);
+          window.visualViewport.addEventListener("scroll", onVisualViewportChange);
         }
 
         function focusOtpFieldForKeyboard() {
@@ -1001,11 +1035,12 @@
         }
 
         function handOffFocusToOtpFromMobile() {
-          if (mobile.readOnly) mobile.readOnly = false;
           isOtpInputFocused = true;
           focusOtpFieldForKeyboard();
           requestAnimationFrame(function () {
             focusOtpFieldForKeyboard();
+            updateOtpSheetKeyboardLift();
+            otpSwapInProgress = false;
           });
         }
 
@@ -1019,6 +1054,7 @@
             otpSheet.classList.contains("opacity-100")
           ) {
             handOffFocusToOtpFromMobile();
+            updateOtpSheetKeyboardLift();
             return;
           }
 
@@ -1030,8 +1066,7 @@
           clearTimeout(openOtp._focusTimer);
           openOtp._focusTimer = null;
 
-          /* Keep system keypad up: #mobile stays focused during sheet swap; readOnly blocks edits. */
-          mobile.readOnly = true;
+          otpSwapInProgress = true;
           if (loginSheet) {
             loginSheet.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
             loginSheet.classList.remove("translate-y-0", "opacity-100");
@@ -1057,20 +1092,27 @@
             return;
           }
 
+          /* Focus OTP on the next frames so the numeric keyboard stays up through the sheet slide
+             (same gesture as Get OTP) and the sheet can lift as soon as the viewport shrinks. */
+          requestAnimationFrame(function () {
+            requestAnimationFrame(afterSheetSwap);
+          });
+
           function onOtpSheetTe(ev) {
             if (ev.target !== otpSheet) return;
             if (ev.propertyName !== "transform") return;
             afterSheetSwap();
           }
           otpSheet.addEventListener("transitionend", onOtpSheetTe);
-          openOtp._focusTimer = window.setTimeout(afterSheetSwap, 480);
+          openOtp._focusTimer = window.setTimeout(afterSheetSwap, 520);
         }
 
         function closeOtp() {
           isOtpInputFocused = false;
-          mobile.readOnly = false;
+          otpSwapInProgress = false;
           clearTimeout(openOtp._focusTimer);
           openOtp._focusTimer = null;
+          if (otpSheet) otpSheet.style.bottom = "";
           if (loginSheet) {
             loginSheet.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
             loginSheet.classList.add("translate-y-0", "opacity-100");
@@ -1086,10 +1128,13 @@
           closeOtp();
         });
 
+        /* mousedown preventDefault keeps focus on #otp-raw so the native keyboard is not dismissed by the tap. */
+        otpResend.addEventListener("mousedown", function (e) {
+          e.preventDefault();
+        });
         otpResend.addEventListener("click", function (e) {
           e.preventDefault();
           showToast("Resent OTP");
-          // Keep popup open; real OTP call can be wired later.
         });
 
         document.getElementById("otp-change-mobile").addEventListener("click", function (e) {
@@ -1100,6 +1145,10 @@
           }, 50);
         });
 
+        otpVerifyBtn.addEventListener("mousedown", function (e) {
+          if (otpVerifyBtn.disabled) return;
+          e.preventDefault();
+        });
         otpVerifyBtn.addEventListener("click", function () {
           if (otpDigits().length !== 6) {
             showToast("Enter the 6-digit OTP");
@@ -1143,6 +1192,9 @@
           }, 1500);
         }
 
+        btnOtp.addEventListener("mousedown", function (e) {
+          e.preventDefault();
+        });
         btnOtp.addEventListener("click", function () {
           runGetOtpFlow();
         });
