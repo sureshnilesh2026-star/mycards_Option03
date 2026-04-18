@@ -132,16 +132,24 @@
           transition: none;
         }
       }
-      /* Top chrome: slides in from above (translateY only — no scale) */
-      /* Crop system status row (time / Wi‑Fi / battery); 96px Figma chrome = status + app bar */
+      /* Top chrome: MyCards redesign app header (360×55), same asset as card.html; dark band so white artwork reads */
       #verify-top-bar {
-        --verify-status-bar-h: 48px;
-        height: calc(96px - var(--verify-status-bar-h));
+        height: 55px;
         transform: translateY(-100%);
         transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        background: linear-gradient(135deg, #0c101f 0%, #131b34 50%, #1a2545 100%);
+        line-height: 0;
       }
       #verify-top-bar .verify-top-bar-img {
-        top: calc(-1 * var(--verify-status-bar-h));
+        position: relative;
+        left: auto;
+        top: auto;
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 55px;
+        object-fit: contain;
+        object-position: left top;
       }
       #verify-top-bar.verify-top-bar--in {
         transform: translateY(0);
@@ -291,18 +299,10 @@
         left: 28px;
         top: 53%;
       }
-      #card-swiggy .card-oncard-digits {
-        left: 28px;
-        top: 53.25%;
-      }
-      #card-tanue .card-oncard-digits {
-        left: 28px;
-        top: 53%;
-      }
-      /* 105% of prior 344×252.27 artwork size */
+      /* Leather wallet PNG (720×528); width matches layout, height:auto keeps emboss/detail proportional */
       #wallet-final {
         width: calc(344px * 1.05);
-        height: calc(252.27px * 1.05);
+        height: auto;
         max-width: none;
         object-fit: contain;
         transform: translateX(-50%) translateY(-50%) translateY(1000px) scale(0.9);
@@ -416,17 +416,19 @@
   <body class="bg-white flex items-start justify-center p-0 box-border w-full h-[100dvh]">
     <div class="frame-root relative rounded-none bg-white flex flex-col flex-shrink-0 w-full">
       <!-- Step: show only WalletFinal; hide all other elements -->
-      <!-- Top Bar: visible above all layers (clipped from Figma verify background) -->
+      <!-- App header chrome: redesign SVG (same asset as card.html) -->
       <div
         id="verify-top-bar"
         aria-hidden="true"
         class="absolute left-0 top-0 right-0 w-full overflow-hidden z-[100] pointer-events-none"
       >
         <img
-          src="assets/verify-bg.png"
+          src="assets/mycards-app-header.svg"
           alt=""
+          width="360"
+          height="55"
           draggable="false"
-          class="verify-top-bar-img absolute left-0 w-full min-h-[100dvh] h-[100dvh] select-none pointer-events-none object-cover object-top"
+          class="verify-top-bar-img select-none pointer-events-none"
         />
       </div>
 
@@ -507,7 +509,7 @@
       <!-- Separate cards (use exact card PNGs); wrapper retains .card-layer motion -->
       <div
         id="card-infinia"
-        class="card-layer absolute left-1/2 top-[292px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
+        class="card-layer absolute left-1/2 top-[348px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
       >
         <img
           src="assets/card-infinia.png"
@@ -532,60 +534,8 @@
         </div>
       </div>
       <div
-        id="card-tanue"
-        class="card-layer absolute left-1/2 top-[343px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
-      >
-        <img
-          src="assets/card-tatanue.png"
-          alt=""
-          draggable="false"
-          aria-hidden="true"
-          class="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
-        />
-        <div class="card-oncard-digits card-oncard-digits--empty" aria-hidden="true">
-          <div class="card-oncard-digits__dot-groups" aria-hidden="true">
-            <span class="card-oncard-digits__group">
-              <span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span>
-            </span>
-            <span class="card-oncard-digits__group">
-              <span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span>
-            </span>
-            <span class="card-oncard-digits__group">
-              <span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span>
-            </span>
-          </div>
-          <span class="card-oncard-digits__last4"><span class="card-oncard-digits__text">3333</span></span>
-        </div>
-      </div>
-      <div
-        id="card-swiggy"
-        class="card-layer absolute left-1/2 top-[394px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
-      >
-        <img
-          src="assets/card-swiggy.png"
-          alt=""
-          draggable="false"
-          aria-hidden="true"
-          class="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
-        />
-        <div class="card-oncard-digits card-oncard-digits--empty" aria-hidden="true">
-          <div class="card-oncard-digits__dot-groups" aria-hidden="true">
-            <span class="card-oncard-digits__group">
-              <span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span>
-            </span>
-            <span class="card-oncard-digits__group">
-              <span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span>
-            </span>
-            <span class="card-oncard-digits__group">
-              <span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span><span class="card-oncard-digits__dot"></span>
-            </span>
-          </div>
-          <span class="card-oncard-digits__last4"><span class="card-oncard-digits__text">3333</span></span>
-        </div>
-      </div>
-      <div
         id="card-millenia"
-        class="card-layer absolute left-1/2 top-[445px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
+        class="card-layer absolute left-1/2 top-[423px] w-[312px] h-[200px] z-[6] overflow-hidden rounded-[12px] pointer-events-auto select-none cursor-pointer"
       >
         <img
           src="assets/card-millenia.png"
@@ -612,7 +562,7 @@
 
       <p
         id="card-select-text"
-        class="absolute left-1/2 top-[280px] z-[30] text-[12px] font-semibold text-[#00875F] whitespace-nowrap opacity-0 pointer-events-none"
+        class="absolute left-1/2 top-[360px] z-[30] text-[12px] font-semibold text-[#00875F] whitespace-nowrap opacity-0 pointer-events-none"
       >
         Select any card to verify
       </p>
@@ -620,7 +570,7 @@
       <button
         id="choose-another-card"
         type="button"
-        class="absolute left-1/2 top-[305px] z-[30] text-[12px] font-semibold text-[#1C3FCA] whitespace-nowrap opacity-0 pointer-events-none hover:underline"
+        class="absolute left-1/2 top-[385px] z-[30] text-[12px] font-semibold text-[#1C3FCA] whitespace-nowrap opacity-0 pointer-events-none hover:underline"
       >
         Choose Another Card
       </button>
@@ -628,7 +578,7 @@
       <button
         id="add-another-above-stack"
         type="button"
-        class="absolute left-1/2 top-[305px] z-[30] text-[12px] font-semibold text-[#00875F] whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-300 hover:underline"
+        class="absolute left-1/2 top-[385px] z-[30] text-[12px] font-semibold text-[#00875F] whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-300 hover:underline"
       >
         Select Card to Continue
       </button>
@@ -663,7 +613,7 @@
       <!-- Last-4 digits display (floating strip + .card-oncard-digits on each card; see CSS + DIGITS_* in script) -->
       <div
         id="card-verify-digits"
-        class="absolute left-1/2 top-[210px] z-[6] opacity-0 pointer-events-none will-change-[top,opacity]"
+        class="absolute left-1/2 top-[290px] z-[6] opacity-0 pointer-events-none will-change-[top,opacity]"
         aria-hidden="true"
       >
         <span
@@ -687,13 +637,15 @@
       </div>
 
       <img
-        src="assets/wallet-final.png"
-        alt=""
+        src="assets/wallet-final.png?v=3"
+        alt="My Cards wallet"
         draggable="false"
         id="wallet-final"
         class="absolute left-1/2 top-1/2 pointer-events-none select-none z-[10]"
-        width="361"
-        height="265"
+        width="720"
+        height="528"
+        loading="eager"
+        decoding="async"
       />
     </div>
     <script>
@@ -732,36 +684,36 @@
         }
         var cards = [
           document.getElementById("card-infinia"),
-          document.getElementById("card-tanue"),
-          document.getElementById("card-swiggy"),
           document.getElementById("card-millenia"),
         ];
         /* Slugs for card_details.html?card=… (same order as cards[]). */
-        var CARD_SLUGS = ["infinia", "tanue", "swiggy", "millenia"];
+        var CARD_SLUGS = ["infinia", "millenia"];
         var isVerifying = false;
         var activeCard = null;
         var enteredDigits = [];
         var postVerifyFinalStack = false;
         var postVerifyFinalPickDone = false;
         var lastVerifiedStackIndex = -1;
-        /* Post–verify pick: selected card animates to this top (px) and scale. */
-        var FINAL_PICK_TOP_PX = 80;
+        /* Post–verify pick: selected card animates to this top (px). */
+        var FINAL_PICK_TOP_PX = 208;
         /* digit strip sits this far below the active card’s top (px); same offset after Done */
         var DIGITS_TOP_OFFSET = 118;
         var VERIFY_INPUT_LIFT_PX = 80;
-        var CARD_TOP_KEYBOARD_BASE = 280;
+        var CARD_TOP_KEYBOARD_BASE = 360;
         var CARD_TOP_KEYBOARD = CARD_TOP_KEYBOARD_BASE - VERIFY_INPUT_LIFT_PX;
-        var CARD_TOP_AFTER_DONE = 440;
-        var CARD_SELECT_VERIFY_TOP_BASE = 228;
-        var CHOOSE_ANOTHER_VERIFY_TOP_BASE = 258;
+        var CARD_TOP_AFTER_DONE = 520;
+        var CARD_SELECT_VERIFY_TOP_BASE = 308;
+        var CHOOSE_ANOTHER_VERIFY_TOP_BASE = 338;
         var INFO_LAYER_VERIFY_TOP_BASE = -78;
         var DIGITS_LEFT = "50%";
         var CARD_MOVE_EASE = "top 600ms cubic-bezier(0.2, 0.8, 0.2, 1)";
         /* Fallback tops before wallet reaches .wallet-bottom (no-js / first paint) */
-        var CARD_STACK_TOPS_PX = [292, 343, 394, 445];
+        var CARD_STACK_TOPS_PX = [348, 423];
         var CARD_STACK_GAP = 51;
-        /* Y of topmost card in stack = (wallet img top in frame) − this (see getWalletTopInFrame) */
-        var CARD_STACK_OFFSET_ABOVE_WALLET = 210;
+        /* Infinia (stack index 0) sits this many px higher than the wallet-derived base Y. */
+        var INFINIA_STACK_NUDGE_UP_PX = 24;
+        /* Y of wallet-derived stack base for Millenia = (wallet img top in frame) − this (see getWalletTopInFrame) */
+        var CARD_STACK_OFFSET_ABOVE_WALLET = 130;
         /* Vertical gap between hint / above-stack link bottom and top-of-stack (px) */
         var CARD_SELECT_GAP_ABOVE_STACK = 2;
         var CARD_ADD_LINK_GAP_ABOVE_STACK = 4;
@@ -792,17 +744,24 @@
           return w.top - f.top;
         }
 
+        /** Millenia at baseY + CARD_STACK_GAP; Infinia 24px above that baseline. */
+        function stackTopsFromBaseY(baseY) {
+          return [baseY - INFINIA_STACK_NUDGE_UP_PX, baseY + CARD_STACK_GAP];
+        }
+
+        /** Recover stack base Y from a card’s measured `top` and its stack index. */
+        function inferStackBaseFromCardTop(stackIdx, topPx) {
+          if (stackIdx === 0) return topPx + INFINIA_STACK_NUDGE_UP_PX;
+          return topPx - stackIdx * CARD_STACK_GAP;
+        }
+
         function getStackTopsPx() {
           if (!el || !el.classList.contains("wallet-bottom")) {
             return CARD_STACK_TOPS_PX.slice();
           }
           var walletTop = getWalletTopInFrame();
           var base = walletTop - CARD_STACK_OFFSET_ABOVE_WALLET;
-          var out = [];
-          for (var si = 0; si < cards.length; si++) {
-            out.push(base + si * CARD_STACK_GAP);
-          }
-          return out;
+          return stackTopsFromBaseY(base);
         }
 
         function syncCardSelectStackHint(stackBaseTopPx) {
@@ -943,7 +902,9 @@
           if (!el || !frameShell || !el.classList.contains("wallet-bottom")) {
             return CARD_STACK_TOPS_PX[0];
           }
-          return getWalletTopInFrame() - CARD_STACK_OFFSET_ABOVE_WALLET;
+          return (
+            getWalletTopInFrame() - CARD_STACK_OFFSET_ABOVE_WALLET - INFINIA_STACK_NUDGE_UP_PX
+          );
         }
 
         function hidePostVerifyAddCardChrome() {
@@ -994,9 +955,10 @@
           if (postVerifyFinalPickDone) return;
           var walletTop = getWalletTopInFrame();
           var base = walletTop - CARD_STACK_OFFSET_ABOVE_WALLET;
+          var tops = stackTopsFromBaseY(base);
           for (var si = 0; si < cards.length; si++) {
             if (!cards[si]) continue;
-            cards[si].style.top = base + si * CARD_STACK_GAP + "px";
+            cards[si].style.top = tops[si] + "px";
           }
           if (!opts.skipCardSelectHint) {
             syncCardSelectStackHint(base);
@@ -1013,7 +975,7 @@
         }
 
         function cardDetailsHref(stackIdx) {
-          var slug = CARD_SLUGS[stackIdx] || "swiggy";
+          var slug = CARD_SLUGS[stackIdx] || "infinia";
           return "card.html?card=" + encodeURIComponent(slug);
         }
 
@@ -1218,12 +1180,8 @@
             }
           }
           if (ref < 0 || isNaN(refTop)) return getStackTopsPx();
-          var base = refTop - ref * CARD_STACK_GAP;
-          var out = [];
-          for (var j = 0; j < cards.length; j++) {
-            out.push(base + j * CARD_STACK_GAP);
-          }
-          return out;
+          var base = inferStackBaseFromCardTop(ref, refTop);
+          return stackTopsFromBaseY(base);
         }
 
         /** When leaving last-4 flow: verify title + “Choose Another” move down and fade (same copy; no text swap until hidden). */
@@ -1343,10 +1301,7 @@
             var wTopMeas =
               el.getBoundingClientRect().top - frameShell.getBoundingClientRect().top;
             var stackBaseMeas = wTopMeas - CARD_STACK_OFFSET_ABOVE_WALLET;
-            stackTopsReturn = [];
-            for (var sm = 0; sm < cards.length; sm++) {
-              stackTopsReturn.push(stackBaseMeas + sm * CARD_STACK_GAP);
-            }
+            stackTopsReturn = stackTopsFromBaseY(stackBaseMeas);
             el.classList.remove("wallet-bottom");
             el.classList.add("wallet-rise-start");
             el.style.transition = walletPrevTransition || "";
@@ -1651,7 +1606,7 @@
           picked.style.zIndex = "40";
           picked.style.transition = "top " + pickEase + ", transform " + pickEase;
           picked.style.top = FINAL_PICK_TOP_PX + "px";
-          picked.style.transform = "translateX(-50%) translateY(0) scale(0.9)";
+          picked.style.transform = "translateX(-50%) translateY(0) rotate(-50deg) scale(0.8)";
           window.setTimeout(function () {
             if (picked) picked.style.transition = "";
             if (digitsWrap) digitsWrap.style.transition = "";
@@ -1762,7 +1717,7 @@
               "verify-entry-copy--slide-in"
             );
             cardSelectText.style.transition = CARD_MOVE_EASE;
-            cardSelectText.style.top = 388 - POST_INPUT_SHIFT_UP_PX + "px";
+            cardSelectText.style.top = 468 - POST_INPUT_SHIFT_UP_PX + "px";
           }
           if (chooseAnotherCard) {
             chooseAnotherCard.classList.remove(
@@ -1770,7 +1725,7 @@
               "verify-entry-copy--slide-in"
             );
             chooseAnotherCard.style.transition = CARD_MOVE_EASE;
-            chooseAnotherCard.style.top = 418 - POST_INPUT_SHIFT_UP_PX + "px";
+            chooseAnotherCard.style.top = 498 - POST_INPUT_SHIFT_UP_PX + "px";
           }
           if (activeCard) {
             activeCard.style.transition = CARD_MOVE_EASE;
@@ -1835,10 +1790,7 @@
             var wTopMeas =
               el.getBoundingClientRect().top - frameShell.getBoundingClientRect().top;
             var stackBaseMeas = wTopMeas - CARD_STACK_OFFSET_ABOVE_WALLET;
-            stackTopsReturn = [];
-            for (var sm = 0; sm < cards.length; sm++) {
-              stackTopsReturn.push(stackBaseMeas + sm * CARD_STACK_GAP);
-            }
+            stackTopsReturn = stackTopsFromBaseY(stackBaseMeas);
             el.classList.remove("wallet-bottom");
             el.classList.add("wallet-rise-start");
             el.style.transition = walletPrevTransition || "";
