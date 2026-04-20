@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=overlays-content"
+    />
+    <title>MyCards — ETB First Time</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+            colors: {
+              brand: { DEFAULT: "#1C3FCA", hover: "#152f9e", link: "#1C3FCA" },
+            },
+            boxShadow: {
+              sheet: "0 -8px 24px rgba(0, 0, 0, 0.08)",
+            },
+            spacing: {
+              /* frame: header (hug) + hero (fill) + login + OTP sheets (fixed h-sheet) */
+              header: "48px",
+              sheet: "320px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+      body {
+        font-family: Inter, system-ui, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        width: 100%;
+        box-sizing: border-box;
+        background: #ffffff;
+        overscroll-behavior: none;
+      }
+      /* Phone shell: full width; min dynamic viewport height, grows with content */
+      .frame-root {
+        width: 100%;
+        max-width: none;
+        min-height: 100vh;
+        height: 100dvh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: linear-gradient(135deg, #080326 0%, #0e346b 100%);
+        transition: transform 0.42s ease-out;
+        will-change: transform;
+        overscroll-behavior: none;
+      }
+      @supports not (height: 100dvh) {
+        .frame-root {
+          height: 100vh;
+        }
+      }
+      /* Prevent iOS/Android scroll chaining / rubber-band bounce */
+      .frame-root,
+      #login-sheet,
+      #otp-sheet {
+        overscroll-behavior: none;
+      }
+      .btn-loading svg {
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      /* Mobile number — default vs active (floating label on border) */
+      .mobile-field {
+        position: relative;
+      }
+      .mobile-field__input {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 52px;
+        padding: 15px 14px 13px;
+        border-radius: 14px;
+        border: 1px solid #c5ced6;
+        background: #fff;
+        font-size: 15px;
+        line-height: 1.25;
+        color: #171717;
+        outline: none;
+        transition: border-color 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mobile-field__input::placeholder {
+        color: transparent;
+      }
+      .mobile-field__input:focus {
+        border-color: #1C3FCA;
+        box-shadow: 0 0 0 2px rgba(28, 63, 202, 0.2);
+      }
+      .mobile-field__input:focus,
+      .mobile-field__input:not(:placeholder-shown) {
+        padding-top: 19px;
+        padding-bottom: 11px;
+      }
+      .mobile-field__label {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: calc(100% - 28px);
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: #737373;
+        pointer-events: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background: #fff;
+        padding: 0 4px;
+        margin-left: -4px;
+        transition: top 0.2s ease, transform 0.2s ease, font-size 0.2s ease, color 0.2s ease,
+          font-weight 0.2s ease;
+      }
+      .mobile-field__input:focus + .mobile-field__label,
+      .mobile-field__input:not(:placeholder-shown) + .mobile-field__label {
+        top: 0;
+        transform: translateY(-50%);
+        font-size: 12px;
+        font-weight: 600;
+        color: #1C3FCA;
+      }
+      /* OTP dots: six slots default #D2D5DB; filled digits #111827 (scoped so Tailwind won’t override) */
+      #otp-code-field .otp-dot {
+        display: inline-block;
+        background-color: #d2d5db !important;
+        transition: background-color 0.15s ease;
+      }
+      #otp-code-field .otp-dot.otp-dot--filled {
+        background-color: #111827 !important;
+      }
+      /* Hide caret / text flash on mobile — dots are the only visible digits */
+      #otp-raw {
+        caret-color: transparent;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+      }
+      /* Login + OTP sheets: hide scrollbars if any nested overflow appears */
+      #login-sheet,
+      #otp-sheet {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      #login-sheet::-webkit-scrollbar,
+      #otp-sheet::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .frame-root {
+          transition: none;
+          will-change: auto;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-[100dvh] min-h-screen p-0 box-border w-full max-w-none">
+    <!--
+      PAGE LAYERS (bottom → top, per region)
+
+      [Viewport — body]
+        L0  Page chrome white on body (outside phone frame)
+
+      [Mobile frame — .frame-root, full width, min-height viewport, grows with content, gradient column]
+        L0  Top bar (Figma SVG assets/menu-header.svg + #btn-eva / #btn-menu overlays)
+        L1  Hero block (flex-1 min-h-0, fill)
+              L0  Marketing art: assets/etb-hero-marketing.svg (z-10, absolute)
+        L2  Bottom sheet (fixed h-sheet 320px, flex-none, aligned to frame bottom)
+              • Title, input, helper, #input-hint
+              • #btn-otp + spinner
+              • Footer copy + nav links
+
+      [Global overlay]
+        L99 Toast #toast (fixed, z-50; hidden via opacity until script shows it)
+    -->
+    <div class="frame-root relative w-full rounded-none sm:shadow-2xl">
+      <!-- Top menu bar: exact Figma export (360×48), see assets/menu-header.svg -->
+      <header class="relative z-30 h-header w-full shrink-0 overflow-hidden">
+        <img
+          src="assets/menu-header.svg"
+          width="360"
+          height="48"
+          alt=""
+          class="pointer-events-none block h-header w-full max-w-full select-none"
+          draggable="false"
+        />
+        <button
+          type="button"
+          id="btn-eva"
+          class="absolute left-0 top-0 z-10 h-header w-[min(280px,78%)] bg-transparent active:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          aria-label="Ask EVA"
+        ></button>
+        <button
+          type="button"
+          id="btn-menu"
+          class="absolute right-[10px] top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-full bg-transparent active:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          aria-label="Open menu"
+        ></button>
+      </header>
+
+      <!-- Hero: marketing art only (SVG has no baked-in “Let’s Get Started” sheet; PNG export often does) -->
+      <div class="relative w-full min-h-0 flex-1 overflow-hidden">
+        <img
+          src="assets/etb-hero-marketing.svg"
+          width="360"
+          height="334"
+          alt=""
+          class="absolute left-1/2 top-0 z-10 h-full w-full max-w-full -translate-x-1/2 select-none pointer-events-none object-contain object-top"
+          draggable="false"
+        />
+      </div>
+
+      <!-- Bottom sheet: interactive layer (matches Figma spacing; graphics above are unchanged) -->
+      <div
+        id="login-sheet"
+        class="flex flex-col flex-none h-sheet min-h-0 shrink-0 bg-white rounded-t-[24px] shadow-sheet relative z-20 overflow-hidden px-6 pt-0 pb-0"
+      >
+        <!-- Login Details top border (4px gradient) -->
+        <div
+          aria-hidden="true"
+          class="absolute left-0 right-0 top-0 h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#1C3FCA_50%,#FFB1B6_100%)] z-[1]"
+        ></div>
+        <div class="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden pt-6 pb-[30px]">
+          <h2 class="text-[17px] font-bold text-neutral-900 leading-tight mb-2">Let’s Get Started</h2>
+
+          <div class="mobile-field block">
+            <input
+              id="mobile"
+              type="tel"
+              inputmode="numeric"
+              maxlength="10"
+              autocomplete="tel-national"
+              placeholder=" "
+              aria-describedby="info-text"
+              class="mobile-field__input"
+            />
+            <label class="mobile-field__label" for="mobile">Mobile Number</label>
+          </div>
+        <p id="info-text" class="mt-2 text-[12px] text-neutral-500 leading-snug">
+          You’ll receive an OTP on this number
+        </p>
+        <p id="input-hint" class="mt-1 text-xs min-h-[1rem] text-red-600 hidden"></p>
+
+          <button
+            type="button"
+            id="btn-otp"
+            class="mt-5 w-full rounded-xl bg-brand py-3 text-[14px] font-bold text-white tracking-wide shadow-sm transition-colors hover:bg-brand-hover active:bg-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
+            aria-label="Get OTP"
+          >
+            <span id="otp-label">Get OTP</span>
+            <span id="otp-spinner" class="hidden btn-loading">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+              </svg>
+            </span>
+          </button>
+
+          <div
+            class="mt-8 box-border flex max-w-none w-[calc(100%+3rem)] -mx-6 flex-col items-center pt-2 pb-2"
+          >
+            <p class="w-full px-6 text-center text-[11px] leading-snug text-neutral-400">
+              © Copyright 2023 HDFC Bank Ltd.
+            </p>
+            <nav
+              class="mt-2.5 flex w-full max-w-none flex-wrap items-center justify-center gap-x-3 gap-y-1 px-6 text-[12px] font-semibold leading-snug text-brand-link"
+            >
+              <a href="#" class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded px-0.5"
+                >Cookie Policy</a
+              >
+              <a href="#" class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded px-0.5"
+                >Terms &amp; Conditions</a
+              >
+              <a href="#" class="hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded px-0.5"
+                >Privacy Policy</a
+              >
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTP layer: bottom sheet — flush to frame bottom (height matches login sheet token) -->
+      <div
+        id="otp-backdrop"
+        class="absolute inset-0 bg-black/25 opacity-0 pointer-events-none transition-opacity duration-[440ms] ease-out z-[45]"
+        aria-hidden="true"
+      ></div>
+      <div
+        id="otp-sheet"
+        class="absolute left-0 right-0 bottom-0 h-sheet w-full max-w-full bg-[#fdfeff] rounded-t-[26px] overflow-hidden translate-y-full opacity-0 pointer-events-none transition-transform transition-opacity duration-[440ms] ease-out z-[50]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Enter OTP"
+      >
+        <!-- OTP top gradient edge (4px) -->
+        <div
+          aria-hidden="true"
+          class="absolute left-0 right-0 top-0 h-[4px] bg-[linear-gradient(90deg,#FFB6BA_0%,#1C3FCA_50%,#FFB1B6_100%)]"
+        ></div>
+
+        <div class="pt-6 px-6 h-full min-h-0 flex flex-col items-center gap-[24px] relative">
+          <div class="w-[312px] text-center shrink-0">
+            <p class="font-semibold text-[#222] text-[18px] leading-[1.4]">Enter OTP</p>
+            <p class="mt-[12px] text-[#444] font-normal text-[14px] leading-[1.4]">
+              An OTP has been sent on
+              <span class="text-[#222]">••••••</span>
+              <span id="otp-last4" class="text-[#222]">3210</span>
+            </p>
+            <a
+              href="#"
+              id="otp-change-mobile"
+              class="mt-2 inline-block text-[14px] font-medium text-[#1C3FCA] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C3FCA] rounded"
+            >
+              Change Mobile Number
+            </a>
+          </div>
+
+          <div
+            id="otp-code-field"
+            class="relative w-full h-[48px] shrink-0 bg-white border border-[#9ca3af] rounded-[8px] flex items-center justify-center overflow-hidden"
+          >
+            <!-- Dots (visual) -->
+            <div class="w-full px-[16px] flex items-center justify-between">
+              <span class="otp-dot h-[14px] w-[14px] shrink-0 rounded-full" aria-hidden="true"></span>
+              <span class="otp-dot h-[14px] w-[14px] shrink-0 rounded-full" aria-hidden="true"></span>
+              <span class="otp-dot h-[14px] w-[14px] shrink-0 rounded-full" aria-hidden="true"></span>
+              <span class="otp-dot h-[14px] w-[14px] shrink-0 rounded-full" aria-hidden="true"></span>
+              <span class="otp-dot h-[14px] w-[14px] shrink-0 rounded-full" aria-hidden="true"></span>
+              <span class="otp-dot h-[14px] w-[14px] shrink-0 rounded-full" aria-hidden="true"></span>
+            </div>
+
+            <!-- Real input (tap to focus; digits captured in JS) -->
+            <input
+              id="otp-raw"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]*"
+              maxlength="6"
+              class="absolute inset-0 opacity-0"
+              aria-label="OTP code"
+            />
+          </div>
+
+          <div class="w-full shrink-0 flex items-center justify-between text-[16px]">
+            <a
+              href="#"
+              id="otp-resend"
+              class="text-[#1C3FCA] font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C3FCA] rounded"
+            >
+              Resend OTP
+            </a>
+            <span id="otp-didnt" class="text-[#505c65] font-normal">Didn’t receive?</span>
+          </div>
+
+          <button
+            type="button"
+            id="otp-verify"
+            disabled
+            class="w-full shrink-0 rounded-[11px] bg-[#1C3FCA] py-[12px] text-[16px] font-semibold text-white shadow-sm transition-opacity disabled:pointer-events-none disabled:opacity-50"
+          >
+            Verify OTP
+          </button>
+
+          <div class="flex-1 min-h-0"></div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="toast"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 max-w-[90vw] px-4 py-2.5 rounded-lg bg-neutral-900 text-white text-sm shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50"
+      role="status"
+    ></div>
+
+    <script>
+      (function () {
+        var infoText = document.getElementById("info-text");
+        var otpSheet = document.getElementById("otp-sheet");
+        var otpBackdrop = document.getElementById("otp-backdrop");
+        var otpLast4 = document.getElementById("otp-last4");
+        var otpRaw = document.getElementById("otp-raw");
+        var otpVerifyBtn = document.getElementById("otp-verify");
+        var otpResend = document.getElementById("otp-resend");
+
+        function otpDigits() {
+          return otpRaw.value.replace(/\D/g, "");
+        }
+
+        function syncOtpDots() {
+          var dots = document.querySelectorAll("#otp-code-field .otp-dot");
+          var n = otpDigits().length;
+          for (var i = 0; i < dots.length; i++) {
+            dots[i].classList.toggle("otp-dot--filled", i < n);
+          }
+        }
+
+        function syncOtpVerifyButton() {
+          var complete = otpDigits().length === 6;
+          otpVerifyBtn.disabled = !complete;
+        }
+
+        otpRaw.addEventListener("input", function () {
+          this.value = this.value.replace(/\D/g, "").slice(0, 6);
+          syncOtpDots();
+          syncOtpVerifyButton();
+        });
+
+        syncOtpDots();
+        syncOtpVerifyButton();
+
+        function showToast(msg) {
+          var t = document.getElementById("toast");
+          t.textContent = msg;
+          t.classList.remove("opacity-0");
+          clearTimeout(showToast._h);
+          showToast._h = setTimeout(function () {
+            t.classList.add("opacity-0");
+          }, 2200);
+        }
+
+        document.getElementById("btn-eva").addEventListener("click", function () {
+          showToast("Ask EVA");
+        });
+        document.getElementById("btn-menu").addEventListener("click", function () {
+          showToast("Menu");
+        });
+
+        var mobile = document.getElementById("mobile");
+        var hint = document.getElementById("input-hint");
+        var btnOtp = document.getElementById("btn-otp");
+        var otpLabel = document.getElementById("otp-label");
+        var otpSpinner = document.getElementById("otp-spinner");
+        var frameRoot = document.querySelector(".frame-root");
+        var isMobileInputFocused = false;
+        var isOtpInputFocused = false;
+
+        var defaultInfoText = "You’ll receive an OTP on this number";
+
+        function setInfoText(text, isError) {
+          infoText.textContent = text;
+          if (isError) {
+            infoText.classList.remove("text-neutral-500");
+            infoText.classList.add("text-red-600");
+          } else {
+            infoText.classList.remove("text-red-600");
+            infoText.classList.add("text-neutral-500");
+          }
+        }
+
+        mobile.addEventListener("input", function () {
+          this.value = this.value.replace(/\D/g, "").slice(0, 10);
+          hint.classList.add("hidden");
+          setInfoText(defaultInfoText, false);
+        });
+
+        var keyboardShiftDebounceTimer = null;
+        var keyboardShiftRaf = null;
+        var lastAppliedKeyboardShiftPx = null;
+
+        function resetKeyboardShift() {
+          clearTimeout(keyboardShiftDebounceTimer);
+          keyboardShiftDebounceTimer = null;
+          if (keyboardShiftRaf) {
+            cancelAnimationFrame(keyboardShiftRaf);
+            keyboardShiftRaf = null;
+          }
+          lastAppliedKeyboardShiftPx = null;
+          if (!frameRoot) return;
+          frameRoot.style.transform = "";
+        }
+
+        function scheduleKeyboardShift() {
+          clearTimeout(keyboardShiftDebounceTimer);
+          /* Batch visualViewport noise: OTP often fires many events while sheet + keyboard settle */
+          var delay = 72;
+          if (isOtpInputFocused) delay = 130;
+          else if (isMobileInputFocused) delay = 110;
+          keyboardShiftDebounceTimer = window.setTimeout(function () {
+            keyboardShiftDebounceTimer = null;
+            updateKeyboardShift();
+          }, delay);
+        }
+
+        function updateKeyboardShift() {
+          if ((!isMobileInputFocused && !isOtpInputFocused) || !frameRoot) return;
+          if (keyboardShiftRaf) cancelAnimationFrame(keyboardShiftRaf);
+          keyboardShiftRaf = requestAnimationFrame(function () {
+            keyboardShiftRaf = null;
+            var vv = window.visualViewport;
+            var viewportBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+            var targetRect = isOtpInputFocused
+              ? otpVerifyBtn.getBoundingClientRect()
+              : btnOtp.getBoundingClientRect();
+            /* OTP: keep sheet clearly above keyboard; login: slight overlap OK */
+            var bottomReserve = isOtpInputFocused ? 14 : 32;
+            var safeBottom = viewportBottom - bottomReserve;
+            var overlap = Math.max(0, targetRect.bottom - safeBottom);
+            var shiftY = Math.min(overlap, 420);
+            var rounded = Math.round(shiftY);
+            if (lastAppliedKeyboardShiftPx === rounded) return;
+            lastAppliedKeyboardShiftPx = rounded;
+            frameRoot.style.transform = rounded > 0 ? "translateY(-" + rounded + "px)" : "";
+          });
+        }
+
+        /* Reduce native scroll-into-view fighting our lift (flicker) where supported */
+        mobile.addEventListener("pointerdown", function () {
+          if (document.activeElement !== mobile) {
+            try {
+              mobile.focus({ preventScroll: true });
+            } catch (e) {
+              mobile.focus();
+            }
+          }
+        });
+
+        mobile.addEventListener("focus", function () {
+          isMobileInputFocused = true;
+          updateKeyboardShift();
+          scheduleKeyboardShift();
+        });
+
+        mobile.addEventListener("blur", function () {
+          isMobileInputFocused = false;
+          if (!isOtpInputFocused) resetKeyboardShift();
+        });
+
+        otpRaw.addEventListener("focus", function () {
+          isOtpInputFocused = true;
+          updateKeyboardShift();
+          scheduleKeyboardShift();
+        });
+
+        otpRaw.addEventListener("pointerdown", function () {
+          if (document.activeElement !== otpRaw) {
+            try {
+              otpRaw.focus({ preventScroll: true });
+            } catch (e) {
+              otpRaw.focus();
+            }
+          }
+        });
+
+        otpRaw.addEventListener("blur", function () {
+          isOtpInputFocused = false;
+          if (!isMobileInputFocused) resetKeyboardShift();
+        });
+
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", scheduleKeyboardShift);
+          window.visualViewport.addEventListener("scroll", scheduleKeyboardShift);
+        }
+
+        function focusOtpFieldForKeyboard() {
+          try {
+            otpRaw.focus({ preventScroll: true });
+          } catch (_) {
+            otpRaw.focus();
+          }
+          var len = otpRaw.value.length;
+          if (typeof otpRaw.setSelectionRange === "function") {
+            otpRaw.setSelectionRange(len, len);
+          }
+        }
+
+        function openOtp(last4) {
+          otpLast4.textContent = last4;
+          otpRaw.value = "";
+          otpRaw.dispatchEvent(new Event("input"));
+          syncOtpDots();
+          syncOtpVerifyButton();
+
+          clearTimeout(keyboardShiftDebounceTimer);
+          keyboardShiftDebounceTimer = null;
+          lastAppliedKeyboardShiftPx = null;
+
+          otpSheet.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
+          otpSheet.classList.add("translate-y-0", "opacity-100", "pointer-events-auto");
+          otpBackdrop.classList.remove("opacity-0", "pointer-events-none");
+          otpBackdrop.classList.add("opacity-100", "pointer-events-auto");
+
+          /* OTP mode before focus so mobile blur never calls resetKeyboardShift() mid-open */
+          isOtpInputFocused = true;
+          focusOtpFieldForKeyboard();
+          requestAnimationFrame(function () {
+            focusOtpFieldForKeyboard();
+            updateKeyboardShift();
+            scheduleKeyboardShift();
+          });
+          window.setTimeout(function () {
+            if (document.activeElement !== otpRaw) {
+              try {
+                otpRaw.focus({ preventScroll: true });
+              } catch (e) {
+                otpRaw.focus();
+              }
+            }
+            scheduleKeyboardShift();
+          }, 320);
+        }
+
+        function closeOtp() {
+          isOtpInputFocused = false;
+          otpSheet.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
+          otpSheet.classList.remove("translate-y-0", "opacity-100", "pointer-events-auto");
+          otpBackdrop.classList.add("opacity-0", "pointer-events-none");
+          otpBackdrop.classList.remove("opacity-100", "pointer-events-auto");
+          if (!isMobileInputFocused) resetKeyboardShift();
+        }
+
+        otpBackdrop.addEventListener("click", function () {
+          closeOtp();
+        });
+
+        otpResend.addEventListener("click", function (e) {
+          e.preventDefault();
+          showToast("Resent OTP");
+          // Keep popup open; real OTP call can be wired later.
+        });
+
+        document.getElementById("otp-change-mobile").addEventListener("click", function (e) {
+          e.preventDefault();
+          closeOtp();
+          setTimeout(function () {
+            mobile.focus();
+          }, 50);
+        });
+
+        otpVerifyBtn.addEventListener("click", function () {
+          if (otpDigits().length !== 6) {
+            showToast("Enter the 6-digit OTP");
+            return;
+          }
+          window.location.href = "verify.html";
+        });
+
+        var getOtpHandledByTouch = false;
+        var getOtpFlowActive = false;
+        function runGetOtpFlow() {
+          if (btnOtp.disabled || getOtpFlowActive) return;
+          var v = mobile.value.trim();
+          if (!/^\d{10}$/.test(v)) {
+            hint.classList.add("hidden");
+            setInfoText("Enter valid Mobile number", true);
+            mobile.focus();
+            return;
+          }
+
+          getOtpFlowActive = true;
+          /* Do not blur/reset the frame here: that snaps translateY(0) and fights the OTP slide + keyboard (flicker).
+             openOtp focuses #otp-raw, which moves focus off the mobile field smoothly. */
+
+          setInfoText(defaultInfoText, false);
+          btnOtp.disabled = true;
+          btnOtp.setAttribute("aria-busy", "true");
+          otpLabel.classList.add("hidden");
+          otpSpinner.classList.remove("hidden");
+
+          // Open OTP sheet immediately in the same tap gesture so keyboard can
+          // appear from the start of the sheet slide-in animation on mobile.
+          openOtp(v.slice(-4));
+
+          setTimeout(function () {
+            otpSpinner.classList.add("hidden");
+            otpLabel.classList.remove("hidden");
+            otpLabel.textContent = "Get OTP";
+            btnOtp.disabled = false;
+            btnOtp.setAttribute("aria-busy", "false");
+            getOtpFlowActive = false;
+          }, 1500);
+        }
+
+        btnOtp.addEventListener(
+          "touchend",
+          function (e) {
+            if (btnOtp.disabled) return;
+            e.preventDefault();
+            getOtpHandledByTouch = true;
+            runGetOtpFlow();
+            window.setTimeout(function () {
+              getOtpHandledByTouch = false;
+            }, 500);
+          },
+          { passive: false }
+        );
+
+        btnOtp.addEventListener("click", function () {
+          if (getOtpHandledByTouch) return;
+          runGetOtpFlow();
+        });
+      })();
+    </script>
+  </body>
+</html>
