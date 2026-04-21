@@ -175,20 +175,107 @@
         scroll-snap-stop: always;
       }
       .infinia_content {
-        background: linear-gradient(180deg, #041231 0%, #051E47 50%, #010513 100%);
+        --infinia-stack-scroll-shift: 0px;
+        --dynamic-section-gradient: linear-gradient(180deg, #041231 0%, #051E47 50%, #010513 100%);
+        background: var(--dynamic-section-gradient);
       }
       .millenia_content {
-        background: linear-gradient(180deg, #889CC2 0%, #E4EEFA 50%, #FFFFFF 100%);
+        --millenia-stack-scroll-shift: 0px;
+        background: #ffffff;
+      }
+      .infinia_content .credit_limit svg {
+        display: none;
+      }
+      .infinia_content .credit_limit__summary {
+        width: 360px;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #ffffff;
+      }
+      .infinia_content .credit_limit__label {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: 400;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+      .infinia_content .credit_limit__value {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.15;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+      .infinia_content .credit_limit__subtext {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.72);
+      }
+      .infinia_content .credit_limit__card-row {
+        margin-top: 12px;
+        min-height: 26px;
+        padding: 4px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 8px;
+        background: rgba(223, 235, 250, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .infinia_content .credit_limit__brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 5px;
+        background: #1d86ff;
+        color: #ffffff;
+        font-size: 9px;
+        line-height: 1;
+        font-weight: 700;
+      }
+      .infinia_content .credit_limit__digits {
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #ffffff;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 10px;
+        line-height: 1;
+        font-weight: 500;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+      .infinia_content .credit_limit__copy {
+        width: 16px;
+        height: 16px;
+        color: #111827;
+        flex-shrink: 0;
       }
       /* Millenia: header + product tabs sit on content gradient (no solid strip) */
       .millenia_content .frame-root__mycards-header {
-        background-color: transparent;
+        background: transparent;
+        -webkit-backdrop-filter: blur(14px) saturate(125%);
+        backdrop-filter: blur(14px) saturate(125%);
       }
       .millenia_content .frame-root__mycards-svg--millenia {
         object-position: center top;
       }
       .millenia_content .frame-root__product-tabs {
-        background-color: transparent;
+        background: transparent;
+        -webkit-backdrop-filter: blur(14px) saturate(125%);
+        backdrop-filter: blur(14px) saturate(125%);
       }
       /* Millenia product tabs: royal blue active, pale blue default (light header) */
       .millenia_content .product-chip--active {
@@ -205,6 +292,95 @@
       /* Millenia: available credit SVG — label/amount black, subtext grey, pale pill, Visa blue, copy navy */
       .millenia_content .credit_limit {
         background: transparent;
+      }
+      .millenia_content .credit_limit svg {
+        display: none;
+      }
+      .millenia_content .credit_limit__summary {
+        width: 360px;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #000000;
+      }
+      .millenia_content .credit_limit__label {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: 400;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+      .millenia_content .credit_limit__value {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.15;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+      .millenia_content .credit_limit__subtext {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: #6c757d;
+      }
+      .millenia_content .credit_limit__card-row {
+        margin-top: 12px;
+        min-height: 26px;
+        padding: 4px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .millenia_content .credit_limit__brand {
+        display: block;
+        min-width: 30px;
+        height: 18px;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 0;
+        line-height: 0;
+        flex-shrink: 0;
+      }
+      .millenia_content .credit_limit__brand svg {
+        display: block;
+        width: 30px;
+        height: 18px;
+      }
+      .millenia_content .credit_limit__brand img {
+        display: block;
+        width: 30px;
+        height: 18px;
+        object-fit: contain;
+      }
+      .millenia_content .credit_limit__digits {
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #000000;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 10px;
+        line-height: 1;
+        font-weight: 500;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+      .millenia_content .credit_limit__copy {
+        width: 16px;
+        height: 16px;
+        color: #202e66;
+        flex-shrink: 0;
       }
       .millenia_content .credit_limit svg > path:nth-of-type(1),
       .millenia_content .credit_limit svg > path:nth-of-type(2) {
@@ -265,6 +441,8 @@
         flex-shrink: 0;
         background-color: transparent;
         line-height: 0;
+        position: relative;
+        z-index: 10;
       }
       .frame-root.cd-intro .frame-root__mycards-header {
         overflow: hidden;
@@ -281,6 +459,8 @@
         padding: 8px 0 12px;
         background: transparent;
         min-width: 0;
+        position: relative;
+        z-index: 10;
       }
       .frame-root__product-tabs-scroll {
         width: 100%;
@@ -678,30 +858,94 @@
           transition: none;
         }
       }
-      .top_content {
+      /* Infinia top stack: layout and stacking — edit only rules under .infinia_content (Millenia has its own block below). */
+      .infinia_content .infinia_top_content {
         width: 100%;
         min-width: 0;
         display: flex;
         flex-direction: column;
+        position: relative;
+        height: auto;
+        transform: translateY(-48px);
+      }
+      .infinia_content .infinia_top_content::after {
+        display: none;
+      }
+      .infinia_content .infinia_top_content .card_animation {
+        position: relative;
+        z-index: 0;
+      }
+      .infinia_content .infinia_top_content .credit_limit,
+      .infinia_content .infinia_top_content .frame-root__card-settings,
+      .infinia_content .content {
+        position: relative;
+        z-index: 2;
+      }
+      /* Millenia top stack: separate from Infinia — duplicate values here on purpose so pane-specific edits stay isolated. */
+      .millenia_content .millenia_top_content {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        height: auto;
+        transform: translateY(-80px);
+      }
+      .millenia_content .millenia_top_content::after {
+        content: "";
+        position: absolute;
+        top: var(--top-content-patch-top, 0px);
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 550px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 50%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .millenia_content .millenia_top_content .card_animation {
+        position: relative;
+        z-index: 0;
+      }
+      .millenia_content .millenia_top_content .credit_limit,
+      .millenia_content .millenia_top_content .frame-root__card-settings,
+      .millenia_content .content {
+        position: relative;
+        z-index: 2;
       }
       .card_animation {
         flex-shrink: 0;
         width: 100%;
         min-width: 0;
-        --card-animation-scroll-length: 400px;
+        --card-animation-scroll-length: 600px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
         margin-top: 0;
         padding: 0;
         overflow: hidden;
         background: transparent;
         transform: translateY(var(--below-ui-shift));
       }
-      .frame-root__product-tabs + .top_content {
+      .frame-root__product-tabs + .infinia_top_content {
         margin-top: -12px;
+      }
+      .infinia_content .frame-root__product-tabs + .infinia_top_content {
+        margin-top: 0;
+      }
+      .frame-root__product-tabs + .millenia_top_content {
+        margin-top: -12px;
+      }
+      .millenia_content .frame-root__product-tabs + .millenia_top_content {
+        margin-top: 0;
       }
       .card_animation__sequence {
         position: relative;
+        top: 0;
         width: 100%;
         height: var(--card-animation-scroll-length);
+        margin-top: 0;
+        overflow: visible;
       }
       .card_animation__pin {
         position: sticky;
@@ -719,7 +963,7 @@
         position: relative;
         top: -200px;
         width: 100%;
-        height: 400px;
+        height: 600px;
         max-width: none;
         max-height: none;
         aspect-ratio: auto;
@@ -728,7 +972,7 @@
         border-radius: 0;
         background: transparent;
         transform: scale(1);
-        transform-origin: center center;
+        transform-origin: center top;
         will-change: transform;
       }
       .card_animation__canvas {
@@ -750,84 +994,46 @@
         background: transparent;
         pointer-events: none;
       }
-      .card_animation--millenia .card_animation__frame {
-        top: 0;
-        height: 300px;
+      .infinia_content .card_animation--infinia .card_animation__frame {
+        top: -96px;
+        height: 600px;
         border-radius: 0;
         background: transparent;
       }
-      .card_animation__millenia-image {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
+      .millenia_content .card_animation--millenia .card_animation__frame {
+        top: 16px;
+        height: 600px;
+        border-radius: 0;
+        background: transparent;
       }
       .millenia_content .content__body {
         gap: 20px;
-        padding: 18px 0 20px 0;
+        padding: 18px 0 0 0;
       }
       .millenia_content .content1 {
         gap: 12px;
       }
-      .millenia_content__summary-card {
-        width: calc(100% - 32px);
-        margin: 0 16px;
-        border-radius: 18px;
-        border: 1px solid #e8edf8;
-        background: #ffffff;
-        padding: 16px;
+      .infinia_content .credit_limit,
+      .infinia_content .frame-root__card-settings {
+        transform: translateY(calc(-16px + var(--infinia-stack-scroll-shift)));
       }
-      .millenia_content__summary-title {
-        margin: 0;
-        color: #3f4a66;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+      .millenia_content .credit_limit,
+      .millenia_content .frame-root__card-settings {
+        transform: translateY(calc(-160px + var(--millenia-stack-scroll-shift)));
       }
-      .millenia_content__summary-value {
-        margin: 8px 0 0;
-        color: #121826;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        line-height: 1.2;
+      .millenia_content .content {
+        transform: translateY(calc(-236px + var(--millenia-stack-scroll-shift)));
+        padding-bottom: 56px;
+        margin-bottom: calc(-236px + var(--millenia-stack-scroll-shift));
+        border-top: 1px solid #dbe3f2;
+        border-left: 1px solid #dbe3f2;
+        border-right: 1px solid #dbe3f2;
+        box-sizing: border-box;
+        box-shadow: 0 -6px 12px rgba(35, 57, 102, 0.10);
       }
-      .millenia_content__summary-meta {
-        margin: 6px 0 0;
-        color: #7b8995;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 12px;
-        line-height: 1.3;
-      }
-      .millenia_content__offer-list {
-        width: calc(100% - 32px);
-        margin: 0 16px;
-        display: grid;
-        gap: 10px;
-      }
-      .millenia_content__offer {
-        border-radius: 14px;
-        border: 1px solid #e8edf8;
-        background: #ffffff;
-        padding: 12px 14px;
-      }
-      .millenia_content__offer-title {
-        margin: 0;
-        color: #1e2a4a;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.25;
-      }
-      .millenia_content__offer-desc {
-        margin: 4px 0 0;
-        color: #7b8995;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 12px;
-        line-height: 1.35;
+      /* Infinia: tighten gap between Card Settings row and the white content sheet to ~24px. */
+      .infinia_content .content {
+        margin-top: calc(-62px + var(--infinia-stack-scroll-shift));
       }
       .credit_limit {
         flex-shrink: 0;
@@ -2208,6 +2414,21 @@
         max-height: 220px;
         overflow: visible;
       }
+      /* Intro end-states matched to steady-state transforms so there is no jerk when cd-intro classes are removed. */
+      .frame-root.cd-intro.cd-intro--settings .infinia_content .frame-root__card-settings {
+        transform: translateY(calc(-16px + var(--infinia-stack-scroll-shift)));
+      }
+      .frame-root.cd-intro.cd-intro--settings .infinia_content .credit_limit,
+      .frame-root.cd-intro.cd-intro--content .infinia_content .credit_limit {
+        transform: translateY(calc(-16px + var(--infinia-stack-scroll-shift)));
+      }
+      .frame-root.cd-intro.cd-intro--settings .millenia_content .frame-root__card-settings {
+        transform: translateY(calc(-160px + var(--millenia-stack-scroll-shift)));
+      }
+      .frame-root.cd-intro.cd-intro--settings .millenia_content .credit_limit,
+      .frame-root.cd-intro.cd-intro--content .millenia_content .credit_limit {
+        transform: translateY(calc(-160px + var(--millenia-stack-scroll-shift)));
+      }
       .frame-root.cd-intro .credit_limit svg {
         transform: translate3d(0, 16px, 0);
       }
@@ -2280,8 +2501,8 @@
             </div>
           </div>
         </div>
-      <div class="top_content" aria-label="Top content">
-      <div class="card_animation" aria-label="Infinia card animation frame">
+      <div class="infinia_top_content" aria-label="Infinia top content">
+      <div class="card_animation card_animation--infinia" aria-label="Infinia card animation frame">
         <section
           id="infinia-card-sequence"
           class="card_animation__sequence relative h-[400px]"
@@ -2308,6 +2529,30 @@
         </section>
       </div>
       <div class="credit_limit" aria-label="Credit limit">
+<div class="credit_limit__summary" aria-hidden="false">
+  <p class="credit_limit__label">AVAILABLE CREDIT LIMIT</p>
+  <p class="credit_limit__value">₹ 56,500.00</p>
+  <p class="credit_limit__subtext">Of ₹1,00,000</p>
+  <div class="credit_limit__card-row" aria-label="Card number ending 9132">
+    <span class="credit_limit__brand">VISA</span>
+    <p class="credit_limit__digits">
+      <span>••••</span>
+      <span>••••</span>
+      <span>••••</span>
+      <span>9132</span>
+    </p>
+    <svg
+      class="credit_limit__copy"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect x="2.3" y="4.3" width="9.4" height="9.4" rx="2.4" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M6 4V3.3C6 1.99 7 1 8.3 1H11.7C13.01 1 14 1.99 14 3.3V6.7C14 8.01 13.01 9 11.7 9H11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
 <svg width="360" height="121" viewBox="0 0 360 121" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M120.679 23H119.756L122.426 15.7273H123.335L126.006 23H125.082L122.909 16.8778H122.852L120.679 23ZM121.02 20.1591H124.741V20.9403H121.02V20.1591ZM126.753 15.7273L128.912 21.8494H128.998L131.157 15.7273H132.08L129.409 23H128.5L125.83 15.7273H126.753ZM132.886 23H131.963L134.633 15.7273H135.542L138.213 23H137.289L135.116 16.8778H135.059L132.886 23ZM133.227 20.1591H136.949V20.9403H133.227V20.1591ZM140.226 15.7273V23H139.346V15.7273H140.226ZM141.992 23V15.7273H142.873V22.2188H146.253V23H141.992ZM148.374 23H147.451L150.121 15.7273H151.031L153.701 23H152.778L150.604 16.8778H150.548L148.374 23ZM148.715 20.1591H152.437V20.9403H148.715V20.1591ZM154.834 23V15.7273H157.376C157.883 15.7273 158.301 15.8149 158.63 15.9901C158.959 16.1629 159.204 16.3961 159.365 16.6896C159.526 16.9808 159.607 17.304 159.607 17.6591C159.607 17.9716 159.551 18.2296 159.44 18.4332C159.331 18.6368 159.186 18.7978 159.006 18.9162C158.829 19.0346 158.636 19.1222 158.428 19.179V19.25C158.65 19.2642 158.874 19.3423 159.099 19.4844C159.324 19.6264 159.512 19.83 159.663 20.0952C159.815 20.3603 159.891 20.6847 159.891 21.0682C159.891 21.4328 159.808 21.7607 159.642 22.0518C159.476 22.343 159.215 22.5739 158.857 22.7443C158.5 22.9148 158.035 23 157.462 23H154.834ZM155.714 22.2188H157.462C158.037 22.2188 158.445 22.1075 158.687 21.8849C158.931 21.66 159.053 21.3878 159.053 21.0682C159.053 20.822 158.99 20.5947 158.864 20.3864C158.739 20.1757 158.56 20.0076 158.328 19.8821C158.096 19.7543 157.821 19.6903 157.504 19.6903H155.714V22.2188ZM155.714 18.9233H157.348C157.613 18.9233 157.852 18.8712 158.065 18.767C158.281 18.6629 158.451 18.5161 158.577 18.3267C158.705 18.1373 158.768 17.9148 158.768 17.6591C158.768 17.3395 158.657 17.0684 158.435 16.8459C158.212 16.621 157.859 16.5085 157.376 16.5085H155.714V18.9233ZM161.338 23V15.7273H162.218V22.2188H165.599V23H161.338ZM166.963 23V15.7273H171.352V16.5085H167.843V18.9659H171.125V19.7472H167.843V22.2188H171.409V23H166.963ZM181.604 18H180.723C180.671 17.7467 180.58 17.5241 180.45 17.3324C180.322 17.1406 180.166 16.9796 179.981 16.8494C179.799 16.7169 179.596 16.6174 179.374 16.5511C179.151 16.4848 178.919 16.4517 178.678 16.4517C178.238 16.4517 177.839 16.563 177.481 16.7855C177.126 17.008 176.843 17.3359 176.632 17.7692C176.424 18.2024 176.32 18.7339 176.32 19.3636C176.32 19.9934 176.424 20.5249 176.632 20.9581C176.843 21.3913 177.126 21.7192 177.481 21.9418C177.839 22.1643 178.238 22.2756 178.678 22.2756C178.919 22.2756 179.151 22.2424 179.374 22.1761C179.596 22.1098 179.799 22.0116 179.981 21.8814C180.166 21.7488 180.322 21.5866 180.45 21.3949C180.58 21.2008 180.671 20.9782 180.723 20.7273H181.604C181.538 21.099 181.417 21.4316 181.242 21.7251C181.067 22.0187 180.849 22.2685 180.588 22.4744C180.328 22.678 180.036 22.8331 179.711 22.9396C179.389 23.0462 179.045 23.0994 178.678 23.0994C178.058 23.0994 177.506 22.9479 177.023 22.6449C176.54 22.3419 176.16 21.911 175.883 21.3523C175.606 20.7936 175.468 20.1307 175.468 19.3636C175.468 18.5966 175.606 17.9337 175.883 17.375C176.16 16.8163 176.54 16.3854 177.023 16.0824C177.506 15.7794 178.058 15.6278 178.678 15.6278C179.045 15.6278 179.389 15.6811 179.711 15.7876C180.036 15.8942 180.328 16.0504 180.588 16.2564C180.849 16.46 181.067 16.7086 181.242 17.0021C181.417 17.2933 181.538 17.6259 181.604 18ZM183.027 23V15.7273H185.485C186.053 15.7273 186.519 15.8243 186.884 16.0185C187.248 16.2102 187.518 16.4742 187.693 16.8104C187.869 17.1465 187.956 17.5289 187.956 17.9574C187.956 18.3859 187.869 18.7659 187.693 19.0973C187.518 19.4287 187.249 19.6892 186.887 19.8786C186.525 20.0656 186.062 20.1591 185.499 20.1591H183.51V19.3636H185.47C185.859 19.3636 186.171 19.3068 186.408 19.1932C186.647 19.0795 186.82 18.9186 186.926 18.7102C187.035 18.4995 187.09 18.2486 187.09 17.9574C187.09 17.6662 187.035 17.4117 186.926 17.1939C186.817 16.9761 186.643 16.808 186.404 16.6896C186.165 16.5689 185.849 16.5085 185.456 16.5085H183.908V23H183.027ZM186.45 19.733L188.24 23H187.218L185.456 19.733H186.45ZM189.424 23V15.7273H193.813V16.5085H190.304V18.9659H193.586V19.7472H190.304V22.2188H193.87V23H189.424ZM197.645 23H195.4V15.7273H197.744C198.449 15.7273 199.053 15.8729 199.555 16.1641C200.057 16.4529 200.442 16.8684 200.709 17.4105C200.977 17.9503 201.11 18.5966 201.11 19.3494C201.11 20.107 200.975 20.7592 200.706 21.3061C200.436 21.8506 200.043 22.2696 199.527 22.5632C199.011 22.8544 198.383 23 197.645 23ZM196.281 22.2188H197.588C198.189 22.2188 198.687 22.1027 199.083 21.8707C199.478 21.6387 199.773 21.3085 199.967 20.88C200.161 20.4515 200.258 19.9413 200.258 19.3494C200.258 18.7623 200.162 18.2569 199.971 17.8331C199.779 17.407 199.492 17.0803 199.111 16.853C198.73 16.6233 198.255 16.5085 197.687 16.5085H196.281V22.2188ZM203.468 15.7273V23H202.588V15.7273H203.468ZM204.836 16.5085V15.7273H210.291V16.5085H208.004V23H207.123V16.5085H204.836ZM214.463 23V15.7273H215.343V22.2188H218.724V23H214.463ZM220.968 15.7273V23H220.088V15.7273H220.968ZM222.734 15.7273H223.785L226.257 21.7642H226.342L228.814 15.7273H229.865V23H229.041V17.4744H228.97L226.697 23H225.902L223.629 17.4744H223.558V23H222.734V15.7273ZM232.511 15.7273V23H231.631V15.7273H232.511ZM233.879 16.5085V15.7273H239.334V16.5085H237.047V23H236.166V16.5085H233.879Z" fill="black"/>
 <path d="M143.42 35.875L142.798 38.2443H131.369L131.983 35.875H143.42ZM137.48 49L131.651 42.0625L131.659 39.9318H134.54C135.182 39.9318 135.719 39.8125 136.151 39.5739C136.582 39.3352 136.906 39.0114 137.122 38.6023C137.338 38.1932 137.449 37.7273 137.455 37.2045C137.449 36.4205 137.219 35.7812 136.764 35.2869C136.315 34.7869 135.574 34.5369 134.54 34.5369H131.369L132.068 31.5455H134.54C135.989 31.5455 137.196 31.7642 138.162 32.2017C139.134 32.6335 139.861 33.25 140.344 34.0511C140.832 34.8523 141.08 35.8068 141.085 36.9148C141.08 37.8977 140.915 38.7557 140.591 39.4886C140.273 40.2216 139.77 40.8324 139.082 41.321C138.401 41.8097 137.511 42.1733 136.415 42.4119L136.278 42.4631L141.494 48.8466V49H137.48ZM143.438 31.5455L142.798 33.9489H133.389L134.028 31.5455H143.438ZM152.071 49.2386C150.866 49.2386 149.793 49.017 148.849 48.5739C147.912 48.1307 147.168 47.5199 146.616 46.7415C146.065 45.9631 145.778 45.071 145.756 44.0653H149.335C149.375 44.7415 149.659 45.2898 150.188 45.7102C150.716 46.1307 151.344 46.3409 152.071 46.3409C152.651 46.3409 153.162 46.2131 153.605 45.9574C154.054 45.696 154.403 45.3352 154.653 44.875C154.909 44.4091 155.037 43.875 155.037 43.2727C155.037 42.6591 154.906 42.1193 154.645 41.6534C154.389 41.1875 154.034 40.8239 153.58 40.5625C153.125 40.3011 152.605 40.1676 152.02 40.1619C151.509 40.1619 151.011 40.267 150.528 40.4773C150.051 40.6875 149.679 40.9744 149.412 41.3381L146.131 40.75L146.957 31.5455H157.628V34.5625H150L149.548 38.9347H149.651C149.957 38.5028 150.42 38.1449 151.04 37.8608C151.659 37.5767 152.352 37.4347 153.119 37.4347C154.17 37.4347 155.108 37.6818 155.932 38.1761C156.756 38.6705 157.406 39.3494 157.884 40.2131C158.361 41.071 158.597 42.0597 158.591 43.179C158.597 44.3551 158.324 45.4006 157.773 46.3153C157.227 47.2244 156.463 47.9403 155.48 48.4631C154.503 48.9801 153.366 49.2386 152.071 49.2386ZM167.864 49.2386C166.966 49.233 166.099 49.0824 165.264 48.7869C164.435 48.4915 163.69 48.0114 163.031 47.3466C162.372 46.6818 161.849 45.8011 161.463 44.7045C161.082 43.608 160.892 42.2614 160.892 40.6648C160.898 39.1989 161.065 37.8892 161.395 36.7358C161.73 35.5767 162.207 34.5937 162.827 33.7869C163.452 32.9801 164.199 32.3665 165.068 31.946C165.938 31.5199 166.912 31.3068 167.991 31.3068C169.156 31.3068 170.185 31.5341 171.077 31.9886C171.969 32.4375 172.685 33.0483 173.224 33.821C173.77 34.5938 174.099 35.4602 174.213 36.4205H170.574C170.432 35.8125 170.134 35.3352 169.679 34.9886C169.224 34.642 168.662 34.4688 167.991 34.4688C166.855 34.4688 165.991 34.9631 165.401 35.9517C164.815 36.9403 164.517 38.2841 164.506 39.983H164.625C164.886 39.4659 165.239 39.0256 165.682 38.6619C166.131 38.2926 166.639 38.0114 167.207 37.8182C167.781 37.6193 168.386 37.5199 169.023 37.5199C170.057 37.5199 170.977 37.7642 171.784 38.2528C172.591 38.7358 173.227 39.4006 173.693 40.2472C174.159 41.0937 174.392 42.0625 174.392 43.1534C174.392 44.3352 174.116 45.3864 173.565 46.3068C173.02 47.2273 172.256 47.9489 171.273 48.4716C170.295 48.9886 169.159 49.2443 167.864 49.2386ZM167.847 46.3409C168.415 46.3409 168.923 46.2045 169.372 45.9318C169.821 45.6591 170.173 45.2898 170.429 44.8239C170.685 44.358 170.812 43.8352 170.812 43.2557C170.812 42.6761 170.685 42.1562 170.429 41.696C170.179 41.2358 169.832 40.8693 169.389 40.5966C168.946 40.3239 168.44 40.1875 167.872 40.1875C167.446 40.1875 167.051 40.267 166.688 40.4261C166.33 40.5852 166.014 40.8068 165.741 41.0909C165.474 41.375 165.264 41.7045 165.111 42.0795C164.957 42.4489 164.881 42.8437 164.881 43.2642C164.881 43.8267 165.009 44.3409 165.264 44.8068C165.526 45.2727 165.878 45.6449 166.321 45.9233C166.77 46.2017 167.278 46.3409 167.847 46.3409ZM180.262 46.6136L180.168 47.5511C180.094 48.3011 179.952 49.0483 179.742 49.7926C179.538 50.5426 179.322 51.2216 179.094 51.8295C178.873 52.4375 178.694 52.9148 178.558 53.2614H176.205C176.29 52.9261 176.407 52.4574 176.555 51.8551C176.702 51.2585 176.842 50.5881 176.972 49.8438C177.103 49.0994 177.185 48.3409 177.219 47.5682L177.262 46.6136H180.262ZM183.283 45.9318V43.0256L190.57 31.5455H193.076V35.5682H191.593L186.999 42.8381V42.9744H197.354V45.9318H183.283ZM191.661 49V45.0455L191.729 43.7585V31.5455H195.19V49H191.661ZM199.813 49V46.3409L206.026 40.5881C206.555 40.0767 206.998 39.6165 207.356 39.2074C207.719 38.7983 207.995 38.3977 208.183 38.0057C208.37 37.608 208.464 37.179 208.464 36.7188C208.464 36.2074 208.347 35.767 208.114 35.3977C207.881 35.0227 207.563 34.7358 207.16 34.5369C206.756 34.3324 206.299 34.2301 205.788 34.2301C205.254 34.2301 204.788 34.3381 204.39 34.554C203.992 34.7699 203.685 35.0795 203.469 35.483C203.254 35.8864 203.146 36.3665 203.146 36.9233H199.643C199.643 35.7812 199.901 34.7898 200.418 33.9489C200.935 33.108 201.66 32.4574 202.592 31.9972C203.523 31.5369 204.597 31.3068 205.813 31.3068C207.063 31.3068 208.151 31.5284 209.077 31.9716C210.009 32.4091 210.734 33.017 211.251 33.7955C211.768 34.5739 212.026 35.4659 212.026 36.4716C212.026 37.1307 211.896 37.7812 211.634 38.4233C211.379 39.0653 210.921 39.7784 210.262 40.5625C209.603 41.3409 208.674 42.2756 207.475 43.3665L204.927 45.8636V45.983H212.256V49H199.813ZM214.93 49V46.3409L221.143 40.5881C221.672 40.0767 222.115 39.6165 222.473 39.2074C222.837 38.7983 223.112 38.3977 223.3 38.0057C223.487 37.608 223.581 37.179 223.581 36.7188C223.581 36.2074 223.464 35.767 223.232 35.3977C222.999 35.0227 222.68 34.7358 222.277 34.5369C221.874 34.3324 221.416 34.2301 220.905 34.2301C220.371 34.2301 219.905 34.3381 219.507 34.554C219.109 34.7699 218.803 35.0795 218.587 35.483C218.371 35.8864 218.263 36.3665 218.263 36.9233H214.76C214.76 35.7812 215.018 34.7898 215.536 33.9489C216.053 33.108 216.777 32.4574 217.709 31.9972C218.641 31.5369 219.714 31.3068 220.93 31.3068C222.18 31.3068 223.268 31.5284 224.195 31.9716C225.126 32.4091 225.851 33.017 226.368 33.7955C226.885 34.5739 227.143 35.4659 227.143 36.4716C227.143 37.1307 227.013 37.7812 226.751 38.4233C226.496 39.0653 226.038 39.7784 225.379 40.5625C224.72 41.3409 223.791 42.2756 222.592 43.3665L220.044 45.8636V45.983H227.374V49H214.93Z" fill="black"/>
@@ -2796,26 +3041,61 @@
             </div>
           </div>
         </div>
-      <div class="top_content" aria-label="Top content">
+      <div class="millenia_top_content" aria-label="Millenia top content">
       <div class="card_animation card_animation--millenia" aria-label="Millenia card frame">
         <section class="card_animation__sequence" aria-label="Millenia card section">
           <div class="card_animation__pin">
             <div class="card_animation__frame card_animation__frame--millenia">
-              <img
-                class="card_animation__millenia-image"
-                src="assets/card-millenia.png"
-                alt="Millenia credit card"
+              <canvas
+                id="millenia-card-canvas"
+                class="card_animation__canvas block h-full w-full"
                 width="390"
-                height="250"
-                loading="lazy"
-                decoding="async"
-                draggable="false"
-              />
+                height="844"
+                aria-label="Millenia card animation canvas"
+              ></canvas>
+              <div
+                id="millenia-card-loading"
+                class="card_animation__loading absolute inset-0 flex items-center justify-center uppercase tracking-[0.1em] text-[11px] text-[#9ca3af]"
+                aria-live="polite"
+              >
+                Loading Millennia animation...
+              </div>
             </div>
           </div>
         </section>
       </div>
       <div class="credit_limit" aria-label="Available credit summary">
+<div class="credit_limit__summary" aria-hidden="false">
+  <p class="credit_limit__label">AVAILABLE CREDIT LIMIT</p>
+  <p class="credit_limit__value">₹1,52,500.00</p>
+  <p class="credit_limit__subtext">Of ₹2,00,000</p>
+  <div class="credit_limit__card-row" aria-label="Card number ending 9132">
+    <span class="credit_limit__brand" aria-hidden="true">
+      <img
+        src="assets/master_card_logo.png"
+        alt=""
+        decoding="async"
+        draggable="false"
+      />
+    </span>
+    <p class="credit_limit__digits">
+      <span>••••</span>
+      <span>••••</span>
+      <span>••••</span>
+      <span>9132</span>
+    </p>
+    <svg
+      class="credit_limit__copy"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect x="2.3" y="4.3" width="9.4" height="9.4" rx="2.4" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M6 4V3.3C6 1.99 7 1 8.3 1H11.7C13.01 1 14 1.99 14 3.3V6.7C14 8.01 13.01 9 11.7 9H11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
 <svg width="360" height="121" viewBox="0 0 360 121" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M120.679 23H119.756L122.426 15.7273H123.335L126.006 23H125.082L122.909 16.8778H122.852L120.679 23ZM121.02 20.1591H124.741V20.9403H121.02V20.1591ZM126.753 15.7273L128.912 21.8494H128.998L131.157 15.7273H132.08L129.409 23H128.5L125.83 15.7273H126.753ZM132.886 23H131.963L134.633 15.7273H135.542L138.213 23H137.289L135.116 16.8778H135.059L132.886 23ZM133.227 20.1591H136.949V20.9403H133.227V20.1591ZM140.226 15.7273V23H139.346V15.7273H140.226ZM141.992 23V15.7273H142.873V22.2188H146.253V23H141.992ZM148.374 23H147.451L150.121 15.7273H151.031L153.701 23H152.778L150.604 16.8778H150.548L148.374 23ZM148.715 20.1591H152.437V20.9403H148.715V20.1591ZM154.834 23V15.7273H157.376C157.883 15.7273 158.301 15.8149 158.63 15.9901C158.959 16.1629 159.204 16.3961 159.365 16.6896C159.526 16.9808 159.607 17.304 159.607 17.6591C159.607 17.9716 159.551 18.2296 159.44 18.4332C159.331 18.6368 159.186 18.7978 159.006 18.9162C158.829 19.0346 158.636 19.1222 158.428 19.179V19.25C158.65 19.2642 158.874 19.3423 159.099 19.4844C159.324 19.6264 159.512 19.83 159.663 20.0952C159.815 20.3603 159.891 20.6847 159.891 21.0682C159.891 21.4328 159.808 21.7607 159.642 22.0518C159.476 22.343 159.215 22.5739 158.857 22.7443C158.5 22.9148 158.035 23 157.462 23H154.834ZM155.714 22.2188H157.462C158.037 22.2188 158.445 22.1075 158.687 21.8849C158.931 21.66 159.053 21.3878 159.053 21.0682C159.053 20.822 158.99 20.5947 158.864 20.3864C158.739 20.1757 158.56 20.0076 158.328 19.8821C158.096 19.7543 157.821 19.6903 157.504 19.6903H155.714V22.2188ZM155.714 18.9233H157.348C157.613 18.9233 157.852 18.8712 158.065 18.767C158.281 18.6629 158.451 18.5161 158.577 18.3267C158.705 18.1373 158.768 17.9148 158.768 17.6591C158.768 17.3395 158.657 17.0684 158.435 16.8459C158.212 16.621 157.859 16.5085 157.376 16.5085H155.714V18.9233ZM161.338 23V15.7273H162.218V22.2188H165.599V23H161.338ZM166.963 23V15.7273H171.352V16.5085H167.843V18.9659H171.125V19.7472H167.843V22.2188H171.409V23H166.963ZM181.604 18H180.723C180.671 17.7467 180.58 17.5241 180.45 17.3324C180.322 17.1406 180.166 16.9796 179.981 16.8494C179.799 16.7169 179.596 16.6174 179.374 16.5511C179.151 16.4848 178.919 16.4517 178.678 16.4517C178.238 16.4517 177.839 16.563 177.481 16.7855C177.126 17.008 176.843 17.3359 176.632 17.7692C176.424 18.2024 176.32 18.7339 176.32 19.3636C176.32 19.9934 176.424 20.5249 176.632 20.9581C176.843 21.3913 177.126 21.7192 177.481 21.9418C177.839 22.1643 178.238 22.2756 178.678 22.2756C178.919 22.2756 179.151 22.2424 179.374 22.1761C179.596 22.1098 179.799 22.0116 179.981 21.8814C180.166 21.7488 180.322 21.5866 180.45 21.3949C180.58 21.2008 180.671 20.9782 180.723 20.7273H181.604C181.538 21.099 181.417 21.4316 181.242 21.7251C181.067 22.0187 180.849 22.2685 180.588 22.4744C180.328 22.678 180.036 22.8331 179.711 22.9396C179.389 23.0462 179.045 23.0994 178.678 23.0994C178.058 23.0994 177.506 22.9479 177.023 22.6449C176.54 22.3419 176.16 21.911 175.883 21.3523C175.606 20.7936 175.468 20.1307 175.468 19.3636C175.468 18.5966 175.606 17.9337 175.883 17.375C176.16 16.8163 176.54 16.3854 177.023 16.0824C177.506 15.7794 178.058 15.6278 178.678 15.6278C179.045 15.6278 179.389 15.6811 179.711 15.7876C180.036 15.8942 180.328 16.0504 180.588 16.2564C180.849 16.46 181.067 16.7086 181.242 17.0021C181.417 17.2933 181.538 17.6259 181.604 18ZM183.027 23V15.7273H185.485C186.053 15.7273 186.519 15.8243 186.884 16.0185C187.248 16.2102 187.518 16.4742 187.693 16.8104C187.869 17.1465 187.956 17.5289 187.956 17.9574C187.956 18.3859 187.869 18.7659 187.693 19.0973C187.518 19.4287 187.249 19.6892 186.887 19.8786C186.525 20.0656 186.062 20.1591 185.499 20.1591H183.51V19.3636H185.47C185.859 19.3636 186.171 19.3068 186.408 19.1932C186.647 19.0795 186.82 18.9186 186.926 18.7102C187.035 18.4995 187.09 18.2486 187.09 17.9574C187.09 17.6662 187.035 17.4117 186.926 17.1939C186.817 16.9761 186.643 16.808 186.404 16.6896C186.165 16.5689 185.849 16.5085 185.456 16.5085H183.908V23H183.027ZM186.45 19.733L188.24 23H187.218L185.456 19.733H186.45ZM189.424 23V15.7273H193.813V16.5085H190.304V18.9659H193.586V19.7472H190.304V22.2188H193.87V23H189.424ZM197.645 23H195.4V15.7273H197.744C198.449 15.7273 199.053 15.8729 199.555 16.1641C200.057 16.4529 200.442 16.8684 200.709 17.4105C200.977 17.9503 201.11 18.5966 201.11 19.3494C201.11 20.107 200.975 20.7592 200.706 21.3061C200.436 21.8506 200.043 22.2696 199.527 22.5632C199.011 22.8544 198.383 23 197.645 23ZM196.281 22.2188H197.588C198.189 22.2188 198.687 22.1027 199.083 21.8707C199.478 21.6387 199.773 21.3085 199.967 20.88C200.161 20.4515 200.258 19.9413 200.258 19.3494C200.258 18.7623 200.162 18.2569 199.971 17.8331C199.779 17.407 199.492 17.0803 199.111 16.853C198.73 16.6233 198.255 16.5085 197.687 16.5085H196.281V22.2188ZM203.468 15.7273V23H202.588V15.7273H203.468ZM204.836 16.5085V15.7273H210.291V16.5085H208.004V23H207.123V16.5085H204.836ZM214.463 23V15.7273H215.343V22.2188H218.724V23H214.463ZM220.968 15.7273V23H220.088V15.7273H220.968ZM222.734 15.7273H223.785L226.257 21.7642H226.342L228.814 15.7273H229.865V23H229.041V17.4744H228.97L226.697 23H225.902L223.629 17.4744H223.558V23H222.734V15.7273ZM232.511 15.7273V23H231.631V15.7273H232.511ZM233.879 16.5085V15.7273H239.334V16.5085H237.047V23H236.166V16.5085H233.879Z" fill="white"/>
 <path d="M143.42 35.875L142.798 38.2443H131.369L131.983 35.875H143.42ZM137.48 49L131.651 42.0625L131.659 39.9318H134.54C135.182 39.9318 135.719 39.8125 136.151 39.5739C136.582 39.3352 136.906 39.0114 137.122 38.6023C137.338 38.1932 137.449 37.7273 137.455 37.2045C137.449 36.4205 137.219 35.7812 136.764 35.2869C136.315 34.7869 135.574 34.5369 134.54 34.5369H131.369L132.068 31.5455H134.54C135.989 31.5455 137.196 31.7642 138.162 32.2017C139.134 32.6335 139.861 33.25 140.344 34.0511C140.832 34.8523 141.08 35.8068 141.085 36.9148C141.08 37.8977 140.915 38.7557 140.591 39.4886C140.273 40.2216 139.77 40.8324 139.082 41.321C138.401 41.8097 137.511 42.1733 136.415 42.4119L136.278 42.4631L141.494 48.8466V49H137.48ZM143.438 31.5455L142.798 33.9489H133.389L134.028 31.5455H143.438ZM152.071 49.2386C150.866 49.2386 149.793 49.017 148.849 48.5739C147.912 48.1307 147.168 47.5199 146.616 46.7415C146.065 45.9631 145.778 45.071 145.756 44.0653H149.335C149.375 44.7415 149.659 45.2898 150.188 45.7102C150.716 46.1307 151.344 46.3409 152.071 46.3409C152.651 46.3409 153.162 46.2131 153.605 45.9574C154.054 45.696 154.403 45.3352 154.653 44.875C154.909 44.4091 155.037 43.875 155.037 43.2727C155.037 42.6591 154.906 42.1193 154.645 41.6534C154.389 41.1875 154.034 40.8239 153.58 40.5625C153.125 40.3011 152.605 40.1676 152.02 40.1619C151.509 40.1619 151.011 40.267 150.528 40.4773C150.051 40.6875 149.679 40.9744 149.412 41.3381L146.131 40.75L146.957 31.5455H157.628V34.5625H150L149.548 38.9347H149.651C149.957 38.5028 150.42 38.1449 151.04 37.8608C151.659 37.5767 152.352 37.4347 153.119 37.4347C154.17 37.4347 155.108 37.6818 155.932 38.1761C156.756 38.6705 157.406 39.3494 157.884 40.2131C158.361 41.071 158.597 42.0597 158.591 43.179C158.597 44.3551 158.324 45.4006 157.773 46.3153C157.227 47.2244 156.463 47.9403 155.48 48.4631C154.503 48.9801 153.366 49.2386 152.071 49.2386ZM167.864 49.2386C166.966 49.233 166.099 49.0824 165.264 48.7869C164.435 48.4915 163.69 48.0114 163.031 47.3466C162.372 46.6818 161.849 45.8011 161.463 44.7045C161.082 43.608 160.892 42.2614 160.892 40.6648C160.898 39.1989 161.065 37.8892 161.395 36.7358C161.73 35.5767 162.207 34.5937 162.827 33.7869C163.452 32.9801 164.199 32.3665 165.068 31.946C165.938 31.5199 166.912 31.3068 167.991 31.3068C169.156 31.3068 170.185 31.5341 171.077 31.9886C171.969 32.4375 172.685 33.0483 173.224 33.821C173.77 34.5938 174.099 35.4602 174.213 36.4205H170.574C170.432 35.8125 170.134 35.3352 169.679 34.9886C169.224 34.642 168.662 34.4688 167.991 34.4688C166.855 34.4688 165.991 34.9631 165.401 35.9517C164.815 36.9403 164.517 38.2841 164.506 39.983H164.625C164.886 39.4659 165.239 39.0256 165.682 38.6619C166.131 38.2926 166.639 38.0114 167.207 37.8182C167.781 37.6193 168.386 37.5199 169.023 37.5199C170.057 37.5199 170.977 37.7642 171.784 38.2528C172.591 38.7358 173.227 39.4006 173.693 40.2472C174.159 41.0937 174.392 42.0625 174.392 43.1534C174.392 44.3352 174.116 45.3864 173.565 46.3068C173.02 47.2273 172.256 47.9489 171.273 48.4716C170.295 48.9886 169.159 49.2443 167.864 49.2386ZM167.847 46.3409C168.415 46.3409 168.923 46.2045 169.372 45.9318C169.821 45.6591 170.173 45.2898 170.429 44.8239C170.685 44.358 170.812 43.8352 170.812 43.2557C170.812 42.6761 170.685 42.1562 170.429 41.696C170.179 41.2358 169.832 40.8693 169.389 40.5966C168.946 40.3239 168.44 40.1875 167.872 40.1875C167.446 40.1875 167.051 40.267 166.688 40.4261C166.33 40.5852 166.014 40.8068 165.741 41.0909C165.474 41.375 165.264 41.7045 165.111 42.0795C164.957 42.4489 164.881 42.8437 164.881 43.2642C164.881 43.8267 165.009 44.3409 165.264 44.8068C165.526 45.2727 165.878 45.6449 166.321 45.9233C166.77 46.2017 167.278 46.3409 167.847 46.3409ZM180.262 46.6136L180.168 47.5511C180.094 48.3011 179.952 49.0483 179.742 49.7926C179.538 50.5426 179.322 51.2216 179.094 51.8295C178.873 52.4375 178.694 52.9148 178.558 53.2614H176.205C176.29 52.9261 176.407 52.4574 176.555 51.8551C176.702 51.2585 176.842 50.5881 176.972 49.8438C177.103 49.0994 177.185 48.3409 177.219 47.5682L177.262 46.6136H180.262ZM183.283 45.9318V43.0256L190.57 31.5455H193.076V35.5682H191.593L186.999 42.8381V42.9744H197.354V45.9318H183.283ZM191.661 49V45.0455L191.729 43.7585V31.5455H195.19V49H191.661ZM199.813 49V46.3409L206.026 40.5881C206.555 40.0767 206.998 39.6165 207.356 39.2074C207.719 38.7983 207.995 38.3977 208.183 38.0057C208.37 37.608 208.464 37.179 208.464 36.7188C208.464 36.2074 208.347 35.767 208.114 35.3977C207.881 35.0227 207.563 34.7358 207.16 34.5369C206.756 34.3324 206.299 34.2301 205.788 34.2301C205.254 34.2301 204.788 34.3381 204.39 34.554C203.992 34.7699 203.685 35.0795 203.469 35.483C203.254 35.8864 203.146 36.3665 203.146 36.9233H199.643C199.643 35.7812 199.901 34.7898 200.418 33.9489C200.935 33.108 201.66 32.4574 202.592 31.9972C203.523 31.5369 204.597 31.3068 205.813 31.3068C207.063 31.3068 208.151 31.5284 209.077 31.9716C210.009 32.4091 210.734 33.017 211.251 33.7955C211.768 34.5739 212.026 35.4659 212.026 36.4716C212.026 37.1307 211.896 37.7812 211.634 38.4233C211.379 39.0653 210.921 39.7784 210.262 40.5625C209.603 41.3409 208.674 42.2756 207.475 43.3665L204.927 45.8636V45.983H212.256V49H199.813ZM214.93 49V46.3409L221.143 40.5881C221.672 40.0767 222.115 39.6165 222.473 39.2074C222.837 38.7983 223.112 38.3977 223.3 38.0057C223.487 37.608 223.581 37.179 223.581 36.7188C223.581 36.2074 223.464 35.767 223.232 35.3977C222.999 35.0227 222.68 34.7358 222.277 34.5369C221.874 34.3324 221.416 34.2301 220.905 34.2301C220.371 34.2301 219.905 34.3381 219.507 34.554C219.109 34.7699 218.803 35.0795 218.587 35.483C218.371 35.8864 218.263 36.3665 218.263 36.9233H214.76C214.76 35.7812 215.018 34.7898 215.536 33.9489C216.053 33.108 216.777 32.4574 217.709 31.9972C218.641 31.5369 219.714 31.3068 220.93 31.3068C222.18 31.3068 223.268 31.5284 224.195 31.9716C225.126 32.4091 225.851 33.017 226.368 33.7955C226.885 34.5739 227.143 35.4659 227.143 36.4716C227.143 37.1307 227.013 37.7812 226.751 38.4233C226.496 39.0653 226.038 39.7784 225.379 40.5625C224.72 41.3409 223.791 42.2756 222.592 43.3665L220.044 45.8636V45.983H227.374V49H214.93Z" fill="white"/>
@@ -2830,14 +3110,72 @@
 </g>
 </svg>
       </div>
-      <div class="frame-root__card-settings" data-settings-state="collapsed">
+      <div
+        class="frame-root__card-settings"
+        id="frame-root-card-settings-millenia"
+        data-settings-state="collapsed"
+      >
+        <div
+          class="frame-root__card-settings__panel"
+          id="card-settings-panel-millenia"
+          role="region"
+          aria-labelledby="card-settings-toggle-millenia"
+          aria-hidden="true"
+        >
+          <div class="frame-root__card-settings__panel-inner">
+            <div class="frame-root__card-settings__figure">
+              <img
+                class="frame-root__card-settings__art"
+                src="assets/card-settings-tiles-millenia.svg"
+                alt="Block Card, Transaction Limits, Change PIN, Card Closure, Re-issue Card, Manage Profile"
+                width="326"
+                height="140"
+                decoding="async"
+                draggable="false"
+              />
+              <div class="frame-root__card-settings__hits">
+                <button
+                  type="button"
+                  class="frame-root__card-settings__hit frame-root__card-settings__hit--1"
+                  aria-label="Block card"
+                ></button>
+                <button
+                  type="button"
+                  class="frame-root__card-settings__hit frame-root__card-settings__hit--2"
+                  aria-label="Transaction limits"
+                ></button>
+                <button
+                  type="button"
+                  class="frame-root__card-settings__hit frame-root__card-settings__hit--3"
+                  aria-label="Change PIN"
+                ></button>
+                <button
+                  type="button"
+                  class="frame-root__card-settings__hit frame-root__card-settings__hit--4"
+                  aria-label="Card closure"
+                ></button>
+                <button
+                  type="button"
+                  class="frame-root__card-settings__hit frame-root__card-settings__hit--5"
+                  aria-label="Re-issue card"
+                ></button>
+                <button
+                  type="button"
+                  class="frame-root__card-settings__hit frame-root__card-settings__hit--6"
+                  aria-label="Manage profile"
+                ></button>
+              </div>
+            </div>
+          </div>
+        </div>
         <button
           type="button"
           class="frame-root__card-settings__toggle"
+          id="card-settings-toggle-millenia"
           aria-expanded="false"
-          aria-controls=""
+          aria-controls="card-settings-panel-millenia"
         >
-          <span class="frame-root__card-settings__toggle-label">Millenia Controls</span>
+          <span class="frame-root__card-settings__toggle-label">Card Settings</span>
           <span class="frame-root__card-settings__chevron" aria-hidden="true">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5.25 7.25L10 10.75l4.75-3.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2851,20 +3189,309 @@
         <div class="content__accent" aria-hidden="true"></div>
         <div class="content__body">
           <div class="content1">
-            <article class="millenia_content__summary-card" aria-label="Current dues">
-              <p class="millenia_content__summary-title">Statement Due</p>
-              <p class="millenia_content__summary-value">Rs 12,840</p>
-              <p class="millenia_content__summary-meta">Pay by 22 Apr to avoid charges</p>
-            </article>
-            <div class="millenia_content__offer-list" aria-label="Benefits">
-              <article class="millenia_content__offer">
-                <p class="millenia_content__offer-title">5% Cashback on Online Spend</p>
-                <p class="millenia_content__offer-desc">Valid on partner merchants up to monthly cap.</p>
-              </article>
-              <article class="millenia_content__offer">
-                <p class="millenia_content__offer-title">Dining Reward Multiplier</p>
-                <p class="millenia_content__offer-desc">Earn accelerated reward points on dining transactions.</p>
-              </article>
+            <div class="content1__options" role="group" aria-label="Quick actions">
+              <img
+                class="content1__options-img"
+                src="assets/content-options-frame.svg"
+                alt="Statement, Rewards, EMIs, Services"
+                width="352"
+                height="87"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              />
+            </div>
+            <div
+              class="content1__due"
+              role="region"
+              aria-label="Statement due and balances"
+            >
+              <div class="content1__due-top">
+                <div class="content1__due-top-row">
+                  <div class="content1__due-main">
+                    <p class="content1__due-amount">₹75,000</p>
+                    <p class="content1__due-date">Statement Due on 12 Feb 2022</p>
+                  </div>
+                  <a class="content1__due-cta" href="#">PAY NOW</a>
+                </div>
+              </div>
+              <div class="content1__due-bottom">
+                <div class="content1__due-bottom-row">
+                  <div class="content1__due-col content1__due-col--left">
+                    <p class="content1__due-stat-label">TOTAL OUTSTANDING</p>
+                    <p class="content1__due-stat-value">₹65,500.00</p>
+                  </div>
+                  <div class="content1__due-divider" aria-hidden="true"></div>
+                  <div class="content1__due-col content1__due-col--right">
+                    <p class="content1__due-stat-label">TOTAL UNBILLED</p>
+                    <div class="content1__due-right-row">
+                      <p class="content1__due-stat-value">₹9,500.00</p>
+                      <img
+                        class="content1__due-arrow"
+                        src="assets/due-back-arrow.svg"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        draggable="false"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="content1__explore"
+              role="region"
+              aria-labelledby="millenia-explore-products-heading"
+            >
+              <div class="content1__explore-heading">
+                <h2 class="content1__explore-title" id="millenia-explore-products-heading">
+                  Explore products
+                </h2>
+              </div>
+              <div
+                class="content1__explore-banner2"
+                role="region"
+                aria-label="Banner Option 2, product tiles"
+              >
+                <div class="content1__explore-cards" aria-hidden="true">
+                  <article class="content1__explore-card content1__explore-card--1">
+                    <img
+                      class="content1__explore-card-art content1__explore-card-art--1"
+                      src="assets/explore-card1.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                    <p class="content1__explore-card-title">Get The Best Card for UPI</p>
+                  </article>
+                  <article class="content1__explore-card content1__explore-card--2">
+                    <img
+                      class="content1__explore-card-art content1__explore-card-art--2"
+                      src="assets/explore-card2.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                    <p class="content1__explore-card-title">Fixed Deposits</p>
+                  </article>
+                  <article class="content1__explore-card content1__explore-card--3">
+                    <img
+                      class="content1__explore-card-art content1__explore-card-art--3"
+                      src="assets/explore-card3.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                    <p class="content1__explore-card-title">Get Instant Personal Loan</p>
+                  </article>
+                  <article class="content1__explore-card content1__explore-card--4">
+                    <img
+                      class="content1__explore-card-art content1__explore-card-art--4"
+                      src="assets/explore-card4.png"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                    <p class="content1__explore-card-title">Invest with SmartWealth</p>
+                  </article>
+                </div>
+              </div>
+              <div
+                class="content1__emi"
+                role="region"
+                aria-label="Recent transactions and active EMIs"
+              >
+                <div class="content1__emi-head">
+                  <div class="content1__emi-head-left">
+                    <a class="content1__emi-link" href="#">Recent Transactions</a>
+                    <a class="content1__emi-chip" href="#">Active EMIs</a>
+                  </div>
+                  <a class="content1__emi-view-all" href="#">VIEW ALL</a>
+                </div>
+                <div class="content1__emi-list">
+                  <div class="content1__emi-item">
+                    <div class="content1__emi-item-left">
+                      <div class="content1__emi-icon-box">
+                        <img class="content1__emi-icon" src="assets/emi-amazon.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content1__emi-item-text">
+                        <p class="content1__emi-merchant">Amazon</p>
+                        <p class="content1__emi-date">29 Jan 2022, 11:22 AM</p>
+                      </div>
+                    </div>
+                    <p class="content1__emi-amount">₹2,340</p>
+                  </div>
+                  <div class="content1__emi-item">
+                    <div class="content1__emi-item-left">
+                      <div class="content1__emi-icon-box">
+                        <img class="content1__emi-icon" src="assets/emi-playstore.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content1__emi-item-text">
+                        <p class="content1__emi-merchant">Google Playstore</p>
+                        <p class="content1__emi-date">24 Jan 2022, 4:32 PM</p>
+                      </div>
+                    </div>
+                    <p class="content1__emi-amount">₹1,200</p>
+                  </div>
+                  <div class="content1__emi-item">
+                    <div class="content1__emi-item-left">
+                      <div class="content1__emi-icon-box">
+                        <img class="content1__emi-icon" src="assets/emi-mcd.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content1__emi-item-text">
+                        <p class="content1__emi-merchant">McDonald’s</p>
+                        <p class="content1__emi-date">22 Jan 2022, 1:45 PM</p>
+                      </div>
+                    </div>
+                    <p class="content1__emi-amount">₹640</p>
+                  </div>
+                  <div class="content1__emi-item">
+                    <div class="content1__emi-item-left">
+                      <div class="content1__emi-icon-box">
+                        <img class="content1__emi-icon" src="assets/emi-swiggy.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content1__emi-item-text">
+                        <p class="content1__emi-merchant">Swiggy</p>
+                        <p class="content1__emi-date">20 Jan 2022, 11:22 AM</p>
+                      </div>
+                    </div>
+                    <p class="content1__emi-amount">₹765</p>
+                  </div>
+                  <div class="content1__emi-item">
+                    <div class="content1__emi-item-left">
+                      <div class="content1__emi-icon-box">
+                        <img class="content1__emi-icon" src="assets/emi-amazon.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content1__emi-item-text">
+                        <p class="content1__emi-merchant">Amazon</p>
+                        <p class="content1__emi-date">29 Jan 2022, 11:22 AM</p>
+                      </div>
+                    </div>
+                    <p class="content1__emi-amount">₹2,340</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="content2"
+              role="region"
+              aria-labelledby="millenia-content2-heading"
+            >
+              <div class="content2__promo-head">
+                <h2 class="content2__deals-line" id="millenia-content2-heading">
+                  Great deals for you!
+                </h2>
+                <a class="content2__view-all" href="#">View all</a>
+              </div>
+              <div class="content2__cards-scroll">
+                <div class="content2__cards-crop">
+                  <img
+                    class="content2__card-img"
+                    src="assets/content2-card-watch.png"
+                    alt="₹5000 off on Apple watches"
+                    width="268"
+                    height="183"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                  <img
+                    class="content2__card-img"
+                    src="assets/content2-card-headphones.png"
+                    alt="Headphones starting at ₹500"
+                    width="268"
+                    height="183"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="content2b"
+              role="region"
+              aria-labelledby="millenia-content2b-heading"
+            >
+              <div class="content2b__promo-head">
+                <h2 class="content2b__deals-line" id="millenia-content2b-heading">
+                  YOUR EXCLUSIVE Card BENEFITS
+                </h2>
+                <a class="content2b__view-all" href="#">View all</a>
+              </div>
+              <div class="content2b__cards-scroll">
+                <div class="content2b__cards-crop">
+                  <article class="content2b__benefit-card content2b__benefit-card--spread">
+                    <div class="content2b__benefit-top">
+                      <p class="content2b__benefit-date">8 MAY - 8 JUL</p>
+                      <div class="content2b__benefit-icon-wrap">
+                        <img class="content2b__benefit-icon content2b__benefit-icon--rewards" src="assets/content3-benefit-rewards.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content2b__benefit-copy">
+                        <p class="content2b__benefit-title">Membership Rewards Points</p>
+                        <p class="content2b__benefit-desc">Get 15000 Bonus Membership Rewards points</p>
+                      </div>
+                    </div>
+                    <div class="content2b__benefit-meta">
+                      <p class="content2b__benefit-meta-label">₹55k Spent</p>
+                      <p class="content2b__benefit-meta-value">₹1.90L</p>
+                    </div>
+                  </article>
+                  <article class="content2b__benefit-card content2b__benefit-card--spread">
+                    <div class="content2b__benefit-top">
+                      <p class="content2b__benefit-date">8 MAY - 8 JUL</p>
+                      <div class="content2b__benefit-icon-wrap content2b__benefit-icon-wrap--flip">
+                        <img class="content2b__benefit-icon" src="assets/content3-benefit-lounge.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content2b__benefit-copy">
+                        <p class="content2b__benefit-title">Complementary Lounge Visits</p>
+                        <p class="content2b__benefit-desc">2 complementary visits to domestic lounge per quarter</p>
+                      </div>
+                    </div>
+                    <div class="content2b__benefit-meta">
+                      <p class="content2b__benefit-meta-label">Availed</p>
+                      <p class="content2b__benefit-meta-value">1<span class="content2b__benefit-meta-value--regular">/2</span></p>
+                    </div>
+                  </article>
+                  <article class="content2b__benefit-card">
+                    <div class="content2b__benefit-top">
+                      <p class="content2b__benefit-date">8 MAY - 8 JUL</p>
+                      <div class="content2b__benefit-icon-wrap content2b__benefit-icon-wrap--flip">
+                        <img class="content2b__benefit-icon" src="assets/content3-benefit-vip.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content2b__benefit-copy">
+                        <p class="content2b__benefit-title">Pass to VIP Air Lounge</p>
+                        <p class="content2b__benefit-desc">Access to 1200+ VIP Air lounges with a priority pass membership</p>
+                      </div>
+                    </div>
+                    <div class="content2b__benefit-meta">
+                      <p class="content2b__benefit-meta-label">Claimed</p>
+                      <img class="content2b__benefit-chevron" src="assets/content3-benefit-chevron.svg" alt="" loading="lazy" decoding="async" draggable="false" />
+                    </div>
+                  </article>
+                  <article class="content2b__benefit-card">
+                    <div class="content2b__benefit-top">
+                      <p class="content2b__benefit-date">8 MAY - 8 JUL</p>
+                      <div class="content2b__benefit-icon-wrap">
+                        <img class="content2b__benefit-icon" src="assets/content3-benefit-taj.png" alt="" loading="lazy" decoding="async" draggable="false" />
+                      </div>
+                      <div class="content2b__benefit-copy">
+                        <p class="content2b__benefit-title">Reward Points + Taj Voucher</p>
+                        <p class="content2b__benefit-desc">Get 25000 Bonus Membership Rewards points and Taj voucher</p>
+                      </div>
+                    </div>
+                    <div class="content2b__benefit-meta">
+                      <p class="content2b__benefit-meta-label">₹55k Spent</p>
+                      <p class="content2b__benefit-meta-value">₹1.90L</p>
+                    </div>
+                  </article>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -2900,81 +3527,143 @@
         var mainContent = document.querySelector(".main_content");
         if (!mainContent) return;
 
-        var infiniaContent = mainContent.querySelector(".infinia_content");
-        var milleniaContent = mainContent.querySelector(".millenia_content");
-        if (!infiniaContent || !milleniaContent) return;
+        var requested = new URLSearchParams(window.location.search).get("card");
+        var key = (requested && String(requested).trim().toLowerCase()) || "infinia";
+        var selector =
+          key === "millenia" ? ".millenia_content" :
+          key === "infinia" ? ".infinia_content" :
+          ".infinia_content";
+        var targetPane = mainContent.querySelector(selector);
+        if (!targetPane) return;
 
-        var clone = infiniaContent.cloneNode(true);
-        clone.classList.remove("infinia_content");
-        clone.classList.add("millenia_content");
-        clone.setAttribute("aria-label", "Millenia content");
-
-        var idMap = {};
-        clone.querySelectorAll("[id]").forEach(function (el) {
-          var oldId = el.id;
-          var newId = oldId + "-millenia";
-          idMap[oldId] = newId;
-          el.id = newId;
-        });
-
-        function remapAttrTokens(value) {
-          if (!value) return value;
-          return value
-            .split(/\s+/)
-            .map(function (token) {
-              return idMap[token] || token;
-            })
-            .join(" ");
+        function syncRequestedPane() {
+          var previousBehavior = mainContent.style.scrollBehavior;
+          mainContent.style.scrollBehavior = "auto";
+          mainContent.scrollLeft = targetPane.offsetLeft || 0;
+          mainContent.style.scrollBehavior = previousBehavior;
         }
 
-        ["for", "aria-controls", "aria-labelledby", "aria-describedby"].forEach(function (attr) {
-          clone.querySelectorAll("[" + attr + "]").forEach(function (el) {
-            var value = el.getAttribute(attr);
-            if (!value) return;
-            el.setAttribute(attr, remapAttrTokens(value));
-          });
-        });
+        syncRequestedPane();
+        requestAnimationFrame(syncRequestedPane);
+        window.addEventListener("load", syncRequestedPane, { passive: true, once: true });
+      })();
+    </script>
+    <script>
+      (function () {
+        function alignTopContentPatchToCreditLimit() {
+          function alignOnePane(topContent) {
+            var creditLimit = topContent.querySelector(".credit_limit");
+            if (!creditLimit) return;
 
-        clone.querySelectorAll("[aria-label], [alt]").forEach(function (el) {
-          ["aria-label", "alt"].forEach(function (attr) {
-            var value = el.getAttribute(attr);
-            if (!value) return;
-            if (value.indexOf("Infinia") !== -1) {
-              el.setAttribute(attr, value.replace(/Infinia/g, "Millenia"));
-            }
-            if (value.indexOf("infinia") !== -1) {
-              el.setAttribute(attr, value.replace(/infinia/g, "millenia"));
-            }
-          });
-        });
-
-        clone.querySelectorAll("*").forEach(function (el) {
-          if (el.children.length) return;
-          var text = el.textContent;
-          if (!text) return;
-          if (text.indexOf("Infinia") !== -1) {
-            el.textContent = text.replace(/Infinia/g, "Millenia");
-            return;
+            var topContentRect = topContent.getBoundingClientRect();
+            var creditRect = creditLimit.getBoundingClientRect();
+            var patchTopPx = Math.round(creditRect.top - topContentRect.top + 300);
+            topContent.style.setProperty("--top-content-patch-top", patchTopPx + "px");
           }
-          if (text.indexOf("infinia") !== -1) {
-            el.textContent = text.replace(/infinia/g, "millenia");
-          }
-        });
 
-        var milleniaHeaderImg = clone.querySelector(
-          ".frame-root__mycards-header .frame-root__mycards-svg"
+          document.querySelectorAll(".infinia_content .infinia_top_content").forEach(alignOnePane);
+          document.querySelectorAll(".millenia_content .millenia_top_content").forEach(alignOnePane);
+        }
+
+        alignTopContentPatchToCreditLimit();
+        window.addEventListener("load", alignTopContentPatchToCreditLimit, { passive: true });
+        window.addEventListener("resize", alignTopContentPatchToCreditLimit, { passive: true });
+      })();
+    </script>
+    <script>
+      (function () {
+        function clampByte(value) {
+          return Math.max(0, Math.min(255, Math.round(value)));
+        }
+
+        function rgbToCss(rgb) {
+          return "rgb(" + clampByte(rgb.r) + ", " + clampByte(rgb.g) + ", " + clampByte(rgb.b) + ")";
+        }
+
+        function averageBandColor(imageData, width, startY, endY) {
+          var data = imageData.data;
+          var startRow = Math.max(0, Math.floor(startY));
+          var endRow = Math.min(imageData.height, Math.ceil(endY));
+          var sumR = 0;
+          var sumG = 0;
+          var sumB = 0;
+          var count = 0;
+
+          for (var y = startRow; y < endRow; y += 1) {
+            for (var x = 0; x < width; x += 1) {
+              var idx = (y * width + x) * 4;
+              var alpha = data[idx + 3];
+              if (alpha === 0) continue;
+              sumR += data[idx];
+              sumG += data[idx + 1];
+              sumB += data[idx + 2];
+              count += 1;
+            }
+          }
+
+          if (!count) {
+            return { r: 0, g: 0, b: 0 };
+          }
+
+          return {
+            r: sumR / count,
+            g: sumG / count,
+            b: sumB / count,
+          };
+        }
+
+        function deriveGradientFromTopArea(image) {
+          var canvas = document.createElement("canvas");
+          var width = image.naturalWidth || image.width;
+          var height = image.naturalHeight || image.height;
+          if (!width || !height) return null;
+
+          canvas.width = width;
+          canvas.height = height;
+          var ctx = canvas.getContext("2d", { alpha: false });
+          if (!ctx) return null;
+
+          ctx.drawImage(image, 0, 0, width, height);
+          var topSliceHeight = Math.max(1, Math.floor(height * 0.27));
+          var topSlice = ctx.getImageData(0, 0, width, topSliceHeight);
+
+          var band1 = averageBandColor(topSlice, width, 0, topSliceHeight * 0.33);
+          var band2 = averageBandColor(topSlice, width, topSliceHeight * 0.33, topSliceHeight * 0.66);
+          var band3 = averageBandColor(topSlice, width, topSliceHeight * 0.66, topSliceHeight);
+
+          return (
+            "linear-gradient(180deg, " +
+            rgbToCss(band1) +
+            " 0%, " +
+            rgbToCss(band2) +
+            " 50%, " +
+            rgbToCss(band3) +
+            " 100%)"
+          );
+        }
+
+        function applyDynamicGradient(selector, firstFramePath) {
+          var roots = document.querySelectorAll(selector);
+          if (!roots.length) return;
+
+          var image = new Image();
+          image.decoding = "async";
+          image.src = firstFramePath;
+
+          image.onload = function () {
+            var gradient = deriveGradientFromTopArea(image);
+            if (!gradient) return;
+            roots.forEach(function (root) {
+              root.style.setProperty("--dynamic-section-gradient", gradient);
+            });
+          };
+        }
+
+        applyDynamicGradient(".infinia_content", "assets/animation/infinia_card/Infinia Card0001.png");
+        applyDynamicGradient(
+          ".millenia_content",
+          "assets/animation/millennia_card/Millennia Card0001.png"
         );
-        if (milleniaHeaderImg) {
-          milleniaHeaderImg.src = "assets/mycards-millenia-header.svg";
-          milleniaHeaderImg.classList.add("frame-root__mycards-svg--millenia");
-        }
-
-        var milleniaCardSettingsArt = clone.querySelector(".frame-root__card-settings__art");
-        if (milleniaCardSettingsArt && milleniaCardSettingsArt.getAttribute("src")) {
-          milleniaCardSettingsArt.src = "assets/card-settings-tiles-millenia.svg";
-        }
-
-        milleniaContent.replaceWith(clone);
       })();
     </script>
     <script>
@@ -3098,19 +3787,18 @@
       (function () {
         var canvas = document.getElementById("infinia-card-canvas");
         var loadingEl = document.getElementById("infinia-card-loading");
-        var sequenceRoot = document.getElementById("infinia-card-sequence");
         var frameShell = canvas ? canvas.closest(".card_animation__frame") : null;
         var scrollContainer = document.querySelector(".frame-root__scrollable");
 
-        if (!canvas || !sequenceRoot || !frameShell) return;
+        if (!canvas || !frameShell) return;
 
         var ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
         if (!ctx) return;
 
         var frameCount = 65;
         var imageBasePath = "assets/animation/infinia_card/";
-        var frameZoom = 1.12;
-        var frameYOffsetPx = -80;
+        var frameZoom = 1.00;
+        var frameYOffsetPx = 0;
         var images = new Array(frameCount);
         var loadedFrameCount = 0;
         var state = { frame: 0 };
@@ -3258,6 +3946,8 @@
             if (frameRootEl) {
               var shiftPx = Math.round(-118 * introProgress);
               frameRootEl.style.setProperty("--scroll-play-shift", shiftPx + "px");
+              var infiniaStackShiftPx = Math.round(18 * introProgress);
+              frameRootEl.style.setProperty("--infinia-stack-scroll-shift", infiniaStackShiftPx + "px");
             }
             scheduleRender();
           }
@@ -3356,10 +4046,13 @@
     </script>
     <script>
       (function () {
-        var canvas = document.getElementById("infinia-card-canvas-millenia");
-        var loadingEl = document.getElementById("infinia-card-loading-millenia");
+        function initMillenniaFrameAnimation(rootEl) {
+        var milleniaAnim = rootEl.querySelector(".card_animation--millenia");
+        if (!milleniaAnim) return;
+        var canvas = milleniaAnim.querySelector(".card_animation__canvas");
+        var loadingEl = milleniaAnim.querySelector(".card_animation__loading");
         var frameShell = canvas ? canvas.closest(".card_animation__frame") : null;
-        var scrollContainer = document.querySelector(".millenia_content .frame-root__scrollable");
+        var scrollContainer = rootEl.querySelector(".frame-root__scrollable");
         if (!canvas || !frameShell || !scrollContainer) return;
 
         var ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
@@ -3367,15 +4060,15 @@
 
         var frameCount = 65;
         var imageBasePath = "assets/animation/millennia_card/";
-        var frameZoom = 1.12;
-        var frameYOffsetPx = -80;
+        var frameZoom = 1.00;
+        var frameYOffsetPx = 0;
         var images = new Array(frameCount);
         var loadedFrameCount = 0;
         var state = { frame: 0 };
         var rafId = 0;
         var lastDrawnFrame = -1;
         var scaleSetter = null;
-        var frameRootEl = canvas.closest(".millenia_content");
+        var frameRootEl = rootEl;
 
         function pad4(n) {
           return String(n).padStart(4, "0");
@@ -3499,6 +4192,8 @@
             if (frameRootEl) {
               var shiftPx = Math.round(-118 * introProgress);
               frameRootEl.style.setProperty("--scroll-play-shift", shiftPx + "px");
+              var milleniaStackShiftPx = Math.round(-8 * introProgress);
+              frameRootEl.style.setProperty("--millenia-stack-scroll-shift", milleniaStackShiftPx + "px");
             }
             scheduleRender();
           }
@@ -3578,6 +4273,12 @@
           .catch(function () {
             if (loadingEl) loadingEl.textContent = "Unable to load Millennia animation";
           });
+        }
+
+        var millenniaRoots = document.querySelectorAll(".millenia_content");
+        millenniaRoots.forEach(function (rootEl) {
+          initMillenniaFrameAnimation(rootEl);
+        });
       })();
     </script>
     <script>
